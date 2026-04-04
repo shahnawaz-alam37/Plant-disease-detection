@@ -1,0 +1,28 @@
+# Environment
+.env
+venv/
+# Node
+node_modules/
+
+# Python
+*.keras
+__pycache__/
+*.pyc
+
+# ML Models
+*.h5
+*.tflite
+
+# Dataset
+PlantVillage-Dataset-master/
+
+# Logs
+logs/
+*.csv
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

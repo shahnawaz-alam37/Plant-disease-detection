@@ -1,5 +1,5 @@
 /**
- * 🎯 PREMIUM ACTION BUTTON
+ * PREMIUM ACTION BUTTON
  * Glassmorphic button with ripple effects and micro-interactions
  * Supports multiple variants with sophisticated animations
  */
@@ -90,13 +90,13 @@ export const PremiumButton: React.FC<PremiumButtonProps> = ({
     switch (variant) {
       case 'primary':
         return {
-          backgroundColor: DesignTokens.colors.aiGreen,
+          backgroundColor: DesignTokens.colors.primary,
         };
       case 'secondary':
         return {
           backgroundColor: 'transparent',
           borderWidth: 2,
-          borderColor: DesignTokens.colors.aiGreen,
+          borderColor: DesignTokens.colors.primary,
         };
       case 'ghost':
         return {
@@ -115,7 +115,7 @@ export const PremiumButton: React.FC<PremiumButtonProps> = ({
         return DesignTokens.colors.deepBlack;
       case 'secondary':
       case 'ghost':
-        return DesignTokens.colors.aiGreen;
+        return DesignTokens.colors.primary;
       default:
         return DesignTokens.colors.textPrimary;
     }
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '100%',
-    backgroundColor: DesignTokens.colors.aiGreenGlow,
+    backgroundColor: DesignTokens.colors.primaryGlow,
     borderRadius: DesignTokens.borderRadius.xl,
   },
   ripple: {

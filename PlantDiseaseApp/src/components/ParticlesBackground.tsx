@@ -153,14 +153,14 @@ const styles = StyleSheet.create({
   particle: {
     position: 'absolute',
     borderRadius: 999,
-    backgroundColor: DesignTokens.colors.aiGreen,
+    backgroundColor: DesignTokens.colors.primary,
   },
   particleGlow: {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: [{ translateX: -6 }, { translateY: -6 }],
-    backgroundColor: DesignTokens.colors.aiGreenGlow,
+    backgroundColor: DesignTokens.colors.primaryGlow,
   },
   radialGlow: {
     ...StyleSheet.absoluteFillObject,

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { theme } from '../theme';
 import { useStore } from '../store';
@@ -71,7 +72,7 @@ export default function HistoryScreen() {
 
     const emptyComponent = (
         <View style={styles.emptyState}>
-            <Text style={styles.emptyIcon}>📋</Text>
+            <Ionicons name="clipboard-outline" size={64} color="#9CA3AF" style={{ marginBottom: 16 }} />
             <Text style={styles.emptyTitle}>No History Yet</Text>
             <Text style={styles.emptyText}>
                 Start analyzing plant leaves to build your detection history.

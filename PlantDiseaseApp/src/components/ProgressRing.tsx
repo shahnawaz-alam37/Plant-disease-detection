@@ -1,5 +1,5 @@
 /**
- * ⚡ ANIMATED PROGRESS RING
+ * ANIMATED PROGRESS RING
  * Circular progress indicator with gradient and glow
  */
 
@@ -35,7 +35,7 @@ export const ProgressRing: React.FC<ProgressRingProps> = ({
   size,
   strokeWidth,
   progress,
-  color = DesignTokens.colors.aiGreen,
+  color = DesignTokens.colors.primary,
   showPercentage = true,
   duration = 2000,
   delay = 0,

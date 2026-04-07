@@ -31,28 +31,28 @@ Plant diseases cause **20-40% of global crop losses annually**, significantly im
 │                        MOBILE APPLICATION                           │
 │                    (React Native + Expo SDK 54)                     │
 │                                                                     │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────────────────┐  │
-│  │   Home   │  │ Capture  │  │  Result  │  │   Learn New (FSL)  │  │
-│  │  Screen  │  │  Screen  │  │  Screen  │  │      Screen        │  │
-│  └──────────┘  └──────────┘  └──────────┘  └────────────────────┘  │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────────────────┐   │
+│  │   Home   │  │ Capture  │  │  Result  │  │   Learn New (FSL)  │   │
+│  │  Screen  │  │  Screen  │  │  Screen  │  │      Screen        │   │
+│  └──────────┘  └──────────┘  └──────────┘  └────────────────────┘   │
 │                       │                                             │
 │              ┌────────▼────────┐                                    │
 │              │   ML Service    │                                    │
 │              │ (mlService.ts)  │                                    │
 │              └────────┬────────┘                                    │
 │                       │                                             │
-│         ┌─────────────┴─────────────┐                              │
-│         │                           │                              │
-│  ┌──────▼──────┐          ┌────────▼─────────┐                    │
-│  │   Online    │          │     Offline       │                    │
-│  │   Mode      │          │   Fallback        │                    │
-│  │ (HTTP API)  │          │ (Color Analysis)  │                    │
-│  └──────┬──────┘          └──────────────────┘                    │
+│         ┌─────────────┴─────────────┐                               │
+│         │                           │                               │
+│  ┌──────▼──────┐          ┌────────▼─────────┐                      │
+│  │   Online    │          │     Offline       │                     │
+│  │   Mode      │          │   Fallback        │                     │
+│  │ (HTTP API)  │          │ (Color Analysis)  │                     │
+│  └──────┬──────┘          └──────────────────┘                      │
 └─────────┼───────────────────────────────────────────────────────────┘
           │ HTTP POST (image/form-data)
           │
 ┌─────────▼───────────────────────────────────────────────────────────┐
-│                       FLASK INFERENCE SERVER                         │
+│                       FLASK INFERENCE SERVER                        │
 │                       (Python 3.x + Flask)                          │
 │                                                                     │
 │  ┌──────────────┐  ┌──────────────┐  ┌────────────────────────────┐ │
@@ -87,7 +87,7 @@ Mobile App ──── HTTP POST /predict ────► Flask Server
    │                                         │
    │    { multipart/form-data: image }       │
    │                                         │
-   │◄──── JSON Response ────────────────────┘
+   │◄──── JSON Response ─────────────────────┘
    │
    │  {
    │    "class": "Tomato - Early Blight",
@@ -233,10 +233,10 @@ flowchart LR
 ### 4.4 Use Case Diagram
 
 ```
-┌────────────────────────────────────────────────────────┐
+┌─────────────────────────────────────────────────────── ─┐
 │                  Plant Disease Detection App            │
 │                                                         │
-│  ┌─────────────────────────────────────────────────┐   │
+│  ┌─────────────────────────────────────────────────┐    │
 │  │  UC-01: Capture Leaf Image                       │   │
 │  │  UC-02: Upload Image from Gallery                │   │
 │  │  UC-03: Detect Plant Disease                     │   │
@@ -247,7 +247,7 @@ flowchart LR
 │  │  UC-08: Train AI on New Disease (Few-Shot)       │   │
 │  │  UC-09: View Scan History                        │   │
 │  │  UC-10: Toggle Dark/Light Theme                  │   │
-│  └─────────────────────────────────────────────────┘   │
+│  └─────────────────────────────────────────────────┘    │
 │         ▲                                               │
 │         │ interacts                                     │
 └─────────┼───────────────────────────────────────────────┘
@@ -269,8 +269,8 @@ Input Image (224 × 224 × 3)
         │
         ▼
 ┌─────────────────────────────┐
-│     MobileNetV2 Backbone     │  ← Pre-trained on ImageNet (1.4M images)
-│   (Feature Extraction)       │     1,000 classes → frozen initially
+│     MobileNetV2 Backbone    │  ← Pre-trained on ImageNet (1.4M images)
+│   (Feature Extraction)      │     1,000 classes → frozen initially
 │   154 layers, 2.2M params   │
 └──────────────┬──────────────┘
                │ 7 × 7 × 1280 feature maps
@@ -331,23 +331,23 @@ Phase 2: Fine-Tuning (10 epochs)
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                  PROTOTYPICAL NETWORK                     │
+│                  PROTOTYPICAL NETWORK                    │
 │                                                          │
-│  1. Feature Extraction                                    │
-│     Full Model → Remove classification head               │
+│  1. Feature Extraction                                   │
+│     Full Model → Remove classification head              │
 │     Output: GlobalAvgPooling → 1280-dim embedding        │
 │                                                          │
-│  2. Support Set (5-10 images per class)                   │
-│     Extract embeddings for each support image             │
+│  2. Support Set (5-10 images per class)                  │
+│     Extract embeddings for each support image            │
 │     Compute PROTOTYPE = mean(embeddings) per class       │
 │                                                          │
-│  3. Query Classification                                  │
-│     Extract embedding for query image                     │
+│  3. Query Classification                                 │
+│     Extract embedding for query image                    │
 │     Find nearest prototype via COSINE SIMILARITY         │
-│     Predicted class = argmax(similarity)                  │
+│     Predicted class = argmax(similarity)                 │
 │                                                          │
-│  Distance Metric: Cosine Similarity                       │
-│  sim(q, p) = (q · p) / (||q|| × ||p||)                  │
+│  Distance Metric: Cosine Similarity                      │
+│  sim(q, p) = (q · p) / (||q|| × ||p||)                   │
 └──────────────────────────────────────────────────────────┘
 ```
 
@@ -566,15 +566,15 @@ App (ThemeProvider)
 ### 9.1 Development Environment
 
 ```
-┌─────────────────────────────────────────┐
+┌──────────────────────────────────────────┐
 │          Developer Machine               │
 │                                          │
-│  ┌──────────┐     ┌──────────────────┐  │
-│  │  Expo    │     │  Flask Server    │  │
-│  │  Dev     │     │  (port 5000)     │  │
-│  │  Server  │     │                  │  │
-│  │(port 8081)│    │  model.keras     │  │
-│  └────┬─────┘     └────────┬─────────┘  │
+│  ┌──────────┐     ┌──────────────────┐   │
+│  │  Expo    │     │  Flask Server    │   │
+│  │  Dev     │     │  (port 5000)     │   │
+│  │  Server  │     │                  │   │
+│  │(port 8081)│    │  model.keras     │   │
+│  └────┬─────┘     └─────────┬────────┘   │
 │       │                     │            │
 │       │     LAN / WiFi      │            │
 │       └──────────┬──────────┘            │

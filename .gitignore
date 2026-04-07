@@ -1,28 +1,71 @@
-# Environment
-.env
-venv/
-# Node
+# Dependencies
 node_modules/
+PlantDiseaseApp/node_modules/
+.venv/
+venv/
+ENV/
+.env*
+!.env.example
+
+# Expo / React Native
+.expo/
+PlantDiseaseApp/.expo/
+dist/
+PlantDiseaseApp/dist/
+web-build/
+PlantDiseaseApp/web-build/
+ios/
+PlantDiseaseApp/ios/
+android/
+PlantDiseaseApp/android/
+*.tsbuildinfo
+expo-env.d.ts
 
 # Python
-*.keras
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*._py
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# ML Models
+# ML Models & Large Files
+*.keras
 *.h5
 *.tflite
+*.pb
+*.onnx
+*.weights
+*.pt
+*.pth
+# plant_disease_model_plantvillage.keras
 
-# Dataset
-PlantVillage-Dataset-master/
-
-# Logs
+# Logs & Data
 logs/
 *.csv
+*.log
+PlantVillage-Dataset-master/
 
-# VS Code
+# IDEs
 .vscode/
+.idea/
+*.swp
+*.swo
 
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini

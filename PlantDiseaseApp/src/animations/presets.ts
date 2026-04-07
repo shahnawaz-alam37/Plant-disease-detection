@@ -1,5 +1,5 @@
 /**
- * 🎯 ANIMATION PRESETS
+ * ANIMATION PRESETS
  * Reusable animation configurations and utilities
  */
 
@@ -80,7 +80,7 @@ export const entranceAnimations = {
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 🎯 PRESS INTERACTIONS
+// PRESS INTERACTIONS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 export const pressAnimations = {
@@ -124,7 +124,7 @@ export const pressAnimations = {
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 🔄 CONTINUOUS ANIMATIONS
+// CONTINUOUS ANIMATIONS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 export const continuousAnimations = {
@@ -277,7 +277,7 @@ export const complexAnimations = {
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 🛠️ UTILITY FUNCTIONS
+// UTILITY FUNCTIONS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 export const animationUtils = {
@@ -330,7 +330,7 @@ export const animationUtils = {
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 📋 PRESET CONFIGS
+// PRESET CONFIGS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 export const springConfigs = {
@@ -365,7 +365,7 @@ export const timingConfigs = {
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 📤 EXPORTS
+// EXPORTS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 export default {

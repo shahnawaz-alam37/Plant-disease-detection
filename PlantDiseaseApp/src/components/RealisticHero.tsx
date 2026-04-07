@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Dimensions, Animated, TouchableOpacity } from 'react-native';
 import { Video, ResizeMode } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 
 const { width, height } = Dimensions.get('window');
 
@@ -83,12 +84,12 @@ export default function RealisticHero({ onScanPress, theme }: RealisticHeroProps
                 {/* Subtle Badge */}
                 <View style={styles.badge}>
                     <View style={[styles.badgeDot, { backgroundColor: theme.colors.success || '#10B981' }]} />
-                    <Text style={styles.badgeText}>AI-Powered Plant Health</Text>
+                    <Text style={styles.badgeText}>Plant Disease Detection</Text>
                 </View>
 
                 {/* Main Heading */}
                 <Text style={styles.heading}>
-                    Protect Your Plants{'\n'}with Artificial Intelligence
+                    Protect Your Plants{'\n'}with Deep Learning
                 </Text>
 
                 {/* Subheading */}
@@ -112,7 +113,7 @@ export default function RealisticHero({ onScanPress, theme }: RealisticHeroProps
                         >
                             <View style={styles.buttonContent}>
                                 <View style={styles.iconCircle}>
-                                    <Text style={styles.buttonIcon}>📱</Text>
+                                    <Ionicons name="search-outline" size={24} color="white" />
                                 </View>
                                 <View style={styles.buttonTextContainer}>
                                     <Text style={styles.buttonText}>Scan Plant Now</Text>
@@ -131,8 +132,8 @@ export default function RealisticHero({ onScanPress, theme }: RealisticHeroProps
                     </View>
                     <View style={styles.divider} />
                     <View style={styles.trustItem}>
-                        <Text style={styles.trustNumber}>50K+</Text>
-                        <Text style={styles.trustLabel}>Scans</Text>
+                        <Text style={styles.trustNumber}>15+</Text>
+                        <Text style={styles.trustLabel}>Species</Text>
                     </View>
                     <View style={styles.divider} />
                     <View style={styles.trustItem}>

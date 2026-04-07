@@ -14,6 +14,7 @@ export const theme = {
         success: '#10B981', // Emerald 500
         white: '#FFFFFF',
         border: '#E5E7EB', // Gray 200
+        lightGray: '#E5E7EB', // Gray 200
         overlay: 'rgba(0, 0, 0, 0.5)',
     },
     spacing: {

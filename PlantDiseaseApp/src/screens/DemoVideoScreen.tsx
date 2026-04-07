@@ -81,7 +81,7 @@ export default function DemoVideoScreen({ navigation }: any) {
                     <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
                 </TouchableOpacity>
                 <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
-                    🎬 How It Works - Demo Video
+                    How It Works — Demo Video
                 </Text>
                 <View style={{ width: 40 }} />
             </View>
@@ -120,7 +120,7 @@ export default function DemoVideoScreen({ navigation }: any) {
                                 <Text style={styles.liveText}>DEMO</Text>
                             </View>
                             <Text style={styles.videoTitle}>
-                                AI-Powered Plant Disease Detection Journey
+                                Plant Disease Detection in Action
                             </Text>
                         </View>
                     </LinearGradient>
@@ -207,37 +207,37 @@ export default function DemoVideoScreen({ navigation }: any) {
             <View style={[styles.descriptionContainer, { backgroundColor: theme.colors.surface }]}>
                 <View style={styles.descriptionHeader}>
                     <Text style={[styles.descriptionTitle, { color: theme.colors.text }]}>
-                        📖 About This Demo
+                        About This Demo
                     </Text>
                 </View>
                 
                 <Text style={[styles.descriptionText, { color: theme.colors.textSecondary }]}>
-                    Watch how our AI technology helps farmers protect their crops! This cinematic journey shows:
+                    Watch how the app helps protect crops. This demo shows:
                 </Text>
 
                 <View style={styles.featuresList}>
                     <View style={styles.featureItem}>
-                        <Text style={styles.featureBullet}>🌾</Text>
+                        <Ionicons name="scan-outline" size={20} color="#10B981" style={{ marginRight: 12, marginTop: -2 }} />
                         <Text style={[styles.featureText, { color: theme.colors.textSecondary }]}>
-                            Real-time disease detection using AI camera
+                            Real-time disease detection using camera analysis
                         </Text>
                     </View>
                     <View style={styles.featureItem}>
-                        <Text style={styles.featureBullet}>🎯</Text>
+                        <Ionicons name="checkmark-circle-outline" size={20} color="#10B981" style={{ marginRight: 12, marginTop: -2 }} />
                         <Text style={[styles.featureText, { color: theme.colors.textSecondary }]}>
-                            Instant diagnosis with 95% accuracy
+                            Instant diagnosis with high confidence scores
                         </Text>
                     </View>
                     <View style={styles.featureItem}>
-                        <Text style={styles.featureBullet}>💊</Text>
+                        <Ionicons name="medkit-outline" size={20} color="#10B981" style={{ marginRight: 12, marginTop: -2 }} />
                         <Text style={[styles.featureText, { color: theme.colors.textSecondary }]}>
                             Expert treatment recommendations
                         </Text>
                     </View>
                     <View style={styles.featureItem}>
-                        <Text style={styles.featureBullet}>🌱</Text>
+                        <Ionicons name="leaf-outline" size={20} color="#10B981" style={{ marginRight: 12, marginTop: -2 }} />
                         <Text style={[styles.featureText, { color: theme.colors.textSecondary }]}>
-                            Transforming farming with technology
+                            Supporting better crop management with technology
                         </Text>
                     </View>
                 </View>

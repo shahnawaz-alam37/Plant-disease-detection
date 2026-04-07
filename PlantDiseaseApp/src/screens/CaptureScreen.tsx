@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, ActivityIndicator, Animated, Dimensions } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
@@ -47,7 +48,7 @@ export default function CaptureScreen() {
         return (
             <View style={styles.container}>
                 <View style={styles.permissionContent}>
-                    <Text style={styles.permissionIcon}>📷</Text>
+                    <Ionicons name="camera-outline" size={64} color="#6B7280" style={{ marginBottom: 24 }} />
                     <Text style={styles.permissionTitle}>Camera Access Required</Text>
                     <Text style={styles.permissionText}>
                         We need access to your camera to analyze plant leaves and detect diseases.
@@ -112,12 +113,12 @@ export default function CaptureScreen() {
         setLoading(true);
         try {
             console.log("=" .repeat(50));
-            console.log("🔬 STARTING ANALYSIS");
+            console.log("STARTING ANALYSIS");
             console.log("=" .repeat(50));
-            console.log("📷 Image URI:", currentImageUri);
+            console.log("Image URI:", currentImageUri);
             
             const result = await predict(currentImageUri);
-            console.log("📊 Raw prediction result:", JSON.stringify(result));
+            console.log("Raw prediction result:", JSON.stringify(result));
 
             // Server returns confidence as 0-100, ensure it's properly formatted
             let confidence = typeof result.confidence === 'number' ? result.confidence : 0;
@@ -130,7 +131,7 @@ export default function CaptureScreen() {
             // Clamp confidence between 0-100
             confidence = Math.max(0, Math.min(100, confidence));
             
-            console.log("📈 Processed confidence:", confidence);
+            console.log("Processed confidence:", confidence);
 
             const prediction = {
                 id: Date.now().toString(),
@@ -144,7 +145,7 @@ export default function CaptureScreen() {
                 topPredictions: result.topPredictions || null
             };
 
-            console.log("✅ Final prediction:", prediction.class, `(${prediction.confidence}%)`);
+            console.log("Final prediction:", prediction.class, `(${prediction.confidence}%)`);
             console.log("=" .repeat(50));
             
             setLastPrediction(prediction);
@@ -157,7 +158,7 @@ export default function CaptureScreen() {
             });
         } catch (error) {
             const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-            console.error("❌ Analysis error:", errorMsg);
+            console.error("Analysis error:", errorMsg);
             
             let helpText = "\n\nTroubleshooting:\n";
             if (errorMsg.includes('Network request failed') || errorMsg.includes('Cannot reach server')) {
@@ -233,7 +234,7 @@ export default function CaptureScreen() {
 
                     {/* Tips text */}
                     <View style={styles.tipsContainer}>
-                        <Text style={styles.tipsText}>📸 Center the leaf in the frame</Text>
+                        <Text style={styles.tipsText}>Center the leaf in the frame</Text>
                     </View>
                 </>
             )}
@@ -242,7 +243,7 @@ export default function CaptureScreen() {
             {!imageUri && (
                 <View style={styles.cameraControls}>
                     <TouchableOpacity style={styles.galleryButton} onPress={pickImage}>
-                        <Text style={styles.galleryText}>🖼️</Text>
+                        <Ionicons name="images-outline" size={28} color="white" />
                         <Text style={styles.galleryLabel}>Gallery</Text>
                     </TouchableOpacity>
 
@@ -268,7 +269,7 @@ export default function CaptureScreen() {
                             onPress={analyzeImage}
                             disabled={!imageUri}
                         >
-                            <Text style={styles.analyzeIcon}>🔍</Text>
+                            <Ionicons name="search-outline" size={20} color="white" style={{ marginRight: 8 }} />
                             <Text style={styles.analyzeText}>DETECT DISEASE</Text>
                         </TouchableOpacity>
                         {!imageUri && (

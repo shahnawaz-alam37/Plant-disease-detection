@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Dimensions, Animated, TouchableOpacity, Platform, StatusBar } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import AIDetectionVideoBackground from './AIDetectionVideoBackground';
 
 const { width, height } = Dimensions.get('window');
@@ -68,20 +69,20 @@ export default function RealisticHeroFallback({ onScanPress, theme }: RealisticH
                     {/* Professional Badge */}
                     <View style={styles.badge}>
                         <View style={[styles.badgeDot, { backgroundColor: theme.colors.success || '#10B981' }]} />
-                        <Text style={styles.badgeText}>AI-Powered Plant Health</Text>
+                        <Text style={styles.badgeText}>Plant Disease Detection</Text>
                         <View style={styles.badgePulse} />
                     </View>
 
                     {/* Main Heading - More Natural */}
                     <Text style={styles.heading}>
                         Protect Your Plants{'\n'}
-                        <Text style={styles.headingAccent}>with AI Technology</Text>
+                        <Text style={styles.headingAccent}>with Deep Learning</Text>
                     </Text>
 
                     {/* Subheading - Professional Copy */}
                     <Text style={styles.subheading}>
-                        Get instant disease diagnosis and expert treatment plans. 
-                        Our machine learning model analyzes leaf patterns to detect issues early.
+                        Get instant disease diagnosis and expert treatment plans.
+                        Trained on thousands of labeled samples across 15+ plant species.
                     </Text>
 
                     {/* Premium CTA Button */}
@@ -102,11 +103,11 @@ export default function RealisticHeroFallback({ onScanPress, theme }: RealisticH
                             >
                                 <View style={styles.buttonContent}>
                                     <View style={styles.iconCircle}>
-                                        <Text style={styles.buttonIcon}>🔍</Text>
+                                        <Ionicons name="search-outline" size={24} color="white" />
                                     </View>
                                     <View style={styles.buttonTextContainer}>
                                         <Text style={styles.buttonText}>Start Plant Scan</Text>
-                                        <Text style={styles.buttonSubtext}>Free • Instant Results • 95% Accurate</Text>
+                                        <Text style={styles.buttonSubtext}>Free • Instant Results</Text>
                                     </View>
                                 </View>
                             </LinearGradient>
@@ -126,8 +127,8 @@ export default function RealisticHeroFallback({ onScanPress, theme }: RealisticH
                         </View>
                         <View style={styles.divider} />
                         <View style={styles.trustItem}>
-                            <Text style={styles.trustNumber}>50K+</Text>
-                            <Text style={styles.trustLabel}>Plants Scanned</Text>
+                            <Text style={styles.trustNumber}>15+</Text>
+                            <Text style={styles.trustLabel}>Species</Text>
                             <View style={styles.trustBar}>
                                 <View style={[styles.trustFill, { width: '100%', backgroundColor: theme.colors.primary }]} />
                             </View>
@@ -146,17 +147,17 @@ export default function RealisticHeroFallback({ onScanPress, theme }: RealisticH
                     <View style={styles.socialProof}>
                         <View style={styles.avatarGroup}>
                             <View style={[styles.avatar, styles.avatar1]}>
-                                <Text style={styles.avatarText}>👨‍🌾</Text>
+                                <Text style={styles.avatarText}>F</Text>
                             </View>
                             <View style={[styles.avatar, styles.avatar2]}>
-                                <Text style={styles.avatarText}>👩‍🔬</Text>
+                                <Text style={styles.avatarText}>R</Text>
                             </View>
                             <View style={[styles.avatar, styles.avatar3]}>
-                                <Text style={styles.avatarText}>🧑‍🎓</Text>
+                                <Text style={styles.avatarText}>S</Text>
                             </View>
                         </View>
                         <Text style={styles.socialProofText}>
-                            Trusted by farmers, researchers, and students worldwide
+                            Used by farmers, researchers, and students
                         </Text>
                     </View>
                 </Animated.View>

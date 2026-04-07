@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Linking } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 
 const { width } = Dimensions.get('window');
@@ -41,14 +42,14 @@ const InstructionStep = ({ step, icon, title, description, images }: {
                 {step < 5 && <View style={[styles.stepLine, { backgroundColor: theme.colors.border }]} />}
             </View>
             <View style={[styles.stepRight, { backgroundColor: theme.colors.surface }]}>
-                <Text style={styles.stepIcon}>{icon}</Text>
+                <Text style={styles.stepIcon}>{step}</Text>
                 <Text style={[styles.stepTitle, { color: theme.colors.text }]}>{title}</Text>
                 <Text style={[styles.stepDescription, { color: theme.colors.textSecondary }]}>{description}</Text>
                 {images && images.length > 0 && (
                     <View style={styles.imagesContainer}>
                         {images.map((img, idx) => (
                             <View key={idx} style={[styles.imagePlaceholder, { backgroundColor: theme.colors.background }]}>
-                                <Text style={styles.imagePlaceholderText}>📷 {img}</Text>
+                                <Text style={styles.imagePlaceholderText}>{img}</Text>
                             </View>
                         ))}
                     </View>
@@ -74,18 +75,18 @@ export default function AboutScreen() {
         >
             {/* Header Section */}
             <View style={[styles.heroSection, { backgroundColor: theme.colors.primary }]}>
-                <Text style={styles.heroIcon}>🌿</Text>
+                <Ionicons name="leaf" size={48} color="#FFFFFF" style={{ marginBottom: 16 }} />
                 <Text style={styles.title}>Plant Doctor</Text>
-                <Text style={styles.subtitle}>AI-Powered Plant Disease Detection</Text>
+                <Text style={styles.subtitle}>Instant Plant Disease Diagnosis</Text>
                 <Text style={styles.description}>
-                    Your personal plant pathologist powered by advanced AI. Identify diseases instantly and get expert treatment recommendations.
+                    Identify plant diseases from a photo and get clear treatment recommendations, backed by a model trained on thousands of real samples.
                 </Text>
             </View>
 
             {/* Demo Video Section */}
             <View style={styles.section}>
                 <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                    🎬 Watch How It Works
+                    Watch How It Works
                 </Text>
                 <TouchableOpacity 
                     style={[styles.videoCard, { backgroundColor: theme.colors.surface }]}
@@ -96,7 +97,7 @@ export default function AboutScreen() {
                         <View style={[styles.playButton, { backgroundColor: theme.colors.primary }]}>
                             <Text style={styles.playIcon}>▶</Text>
                         </View>
-                        <Text style={styles.videoOverlay}>📹 Demo Video</Text>
+                        <Text style={styles.videoOverlay}>Demo Video</Text>
                     </View>
                     <View style={styles.videoInfo}>
                         <Text style={[styles.videoTitle, { color: theme.colors.text }]}>
@@ -112,7 +113,7 @@ export default function AboutScreen() {
             {/* Step-by-Step Instructions */}
             <View style={styles.section}>
                 <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                    📖 Step-by-Step Guide
+                    How to Use
                 </Text>
                 <Text style={[styles.sectionDesc, { color: theme.colors.textSecondary }]}>
                     Follow these simple steps to get accurate disease diagnosis
@@ -121,7 +122,7 @@ export default function AboutScreen() {
                 <View style={styles.instructionsContainer}>
                     <InstructionStep
                         step={1}
-                        icon="📸"
+                        icon=""
                         title="Take a Clear Photo"
                         description="Ensure good natural lighting. Center the affected leaf area. Avoid shadows and blurry images for best results."
                         images={['Good Light', 'Close-up', 'Clear Focus']}
@@ -129,14 +130,14 @@ export default function AboutScreen() {
                     
                     <InstructionStep
                         step={2}
-                        icon="🎯"
-                        title="Tap Scan & Detect"
-                        description="The AI will analyze your image using advanced deep learning models trained on thousands of plant disease images."
+                        icon=""
+                        title="Tap Scan"
+                        description="The model analyzes your image against thousands of labeled plant disease samples to find the best match."
                     />
                     
                     <InstructionStep
                         step={3}
-                        icon="🔍"
+                        icon=""
                         title="Review Diagnosis"
                         description="Check the disease name, confidence score, and affected plant species. Higher confidence means more accurate results."
                         images={['Results View']}
@@ -144,14 +145,14 @@ export default function AboutScreen() {
                     
                     <InstructionStep
                         step={4}
-                        icon="💊"
+                        icon=""
                         title="Read Treatment Plan"
-                        description="Get detailed symptoms, causes, and step-by-step treatment recommendations from agricultural experts."
+                        description="Get detailed symptoms, causes, and step-by-step treatment recommendations based on agricultural research."
                     />
                     
                     <InstructionStep
                         step={5}
-                        icon="✅"
+                        icon=""
                         title="Take Action"
                         description="Apply the recommended treatments. Save the report for future reference. Monitor plant health improvement."
                     />
@@ -161,11 +162,11 @@ export default function AboutScreen() {
             {/* Best Practices Section */}
             <View style={styles.section}>
                 <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                    ⭐ Best Practices for Accurate Results
+                    Tips for Better Results
                 </Text>
                 
                 <View style={[styles.practiceCard, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={styles.practiceIcon}>🔦</Text>
+                    <Ionicons name="sunny-outline" size={28} color={theme.colors.primary} style={{ marginRight: 16 }} />
                     <View style={styles.practiceContent}>
                         <Text style={[styles.practiceTitle, { color: theme.colors.text }]}>
                             Use Natural Daylight
@@ -177,7 +178,7 @@ export default function AboutScreen() {
                 </View>
 
                 <View style={[styles.practiceCard, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={styles.practiceIcon}>📏</Text>
+                    <Ionicons name="crop-outline" size={28} color={theme.colors.primary} style={{ marginRight: 16 }} />
                     <View style={styles.practiceContent}>
                         <Text style={[styles.practiceTitle, { color: theme.colors.text }]}>
                             Capture Affected Area
@@ -189,7 +190,7 @@ export default function AboutScreen() {
                 </View>
 
                 <View style={[styles.practiceCard, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={styles.practiceIcon}>📱</Text>
+                    <Ionicons name="phone-portrait-outline" size={28} color={theme.colors.primary} style={{ marginRight: 16 }} />
                     <View style={styles.practiceContent}>
                         <Text style={[styles.practiceTitle, { color: theme.colors.text }]}>
                             Stable & Clear Shot
@@ -201,7 +202,7 @@ export default function AboutScreen() {
                 </View>
 
                 <View style={[styles.practiceCard, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={styles.practiceIcon}>🌐</Text>
+                    <Ionicons name="wifi-outline" size={28} color={theme.colors.primary} style={{ marginRight: 16 }} />
                     <View style={styles.practiceContent}>
                         <Text style={[styles.practiceTitle, { color: theme.colors.text }]}>
                             Active Internet Required
@@ -216,7 +217,7 @@ export default function AboutScreen() {
             {/* FAQ Section */}
             <View style={styles.section}>
                 <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                    ❓ Frequently Asked Questions
+                    Common Questions
                 </Text>
                 <FAQItem
                     question="How accurate is the AI detection?"
@@ -274,7 +275,7 @@ export default function AboutScreen() {
                     Powered by advanced deep learning and computer vision technology.
                 </Text>
                 <Text style={[styles.footerVersion, { color: theme.colors.textLight }]}>
-                    Version 1.0.0 • Made with 🌱 for healthy plants
+                    Version 1.0.0
                 </Text>
             </View>
         </ScrollView>
@@ -296,7 +297,7 @@ const styles = StyleSheet.create({
         borderBottomRightRadius: 32,
     },
     heroIcon: {
-        fontSize: 64,
+        fontSize: 48,
         marginBottom: 16,
     },
     title: {

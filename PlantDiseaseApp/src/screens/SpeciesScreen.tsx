@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, SafeAreaView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 
 const { width } = Dimensions.get('window');
@@ -9,7 +10,7 @@ const DISEASE_CATEGORIES = [
     {
         id: '1',
         category: 'Fungal Diseases',
-        icon: '🍄',
+        icon: 'leaf',
         color: '#8B5CF6',
         diseases: [
             {
@@ -19,7 +20,6 @@ const DISEASE_CATEGORIES = [
                 symptoms: 'Dark brown spots with concentric rings on leaves',
                 causes: 'Alternaria solani fungus, warm humid conditions',
                 prevention: 'Crop rotation, remove infected debris, fungicide application',
-                icon: '🟤'
             },
             {
                 name: 'Late Blight',
@@ -28,7 +28,6 @@ const DISEASE_CATEGORIES = [
                 symptoms: 'Water-soaked spots, white mold on leaf undersides',
                 causes: 'Phytophthora infestans, cool wet weather',
                 prevention: 'Resistant varieties, copper fungicides, good air circulation',
-                icon: '⚫'
             },
             {
                 name: 'Powdery Mildew',
@@ -37,14 +36,13 @@ const DISEASE_CATEGORIES = [
                 symptoms: 'White powdery coating on leaves and stems',
                 causes: 'Various fungal species, high humidity',
                 prevention: 'Prune for airflow, sulfur sprays, resistant varieties',
-                icon: '⚪'
             },
         ]
     },
     {
         id: '2',
         category: 'Bacterial Diseases',
-        icon: '🦠',
+        icon: 'bug',
         color: '#EF4444',
         diseases: [
             {
@@ -54,7 +52,6 @@ const DISEASE_CATEGORIES = [
                 symptoms: 'Small dark spots with yellow halos on leaves',
                 causes: 'Xanthomonas bacteria, splash from rain or irrigation',
                 prevention: 'Disease-free seeds, copper sprays, avoid overhead watering',
-                icon: '🔴'
             },
             {
                 name: 'Bacterial Canker',
@@ -63,14 +60,13 @@ const DISEASE_CATEGORIES = [
                 symptoms: 'Wilting, stem cankers, bird\'s eye spots on fruit',
                 causes: 'Clavibacter michiganensis, contaminated tools',
                 prevention: 'Sanitation, resistant varieties, avoid plant stress',
-                icon: '🟠'
             },
         ]
     },
     {
         id: '3',
         category: 'Viral Diseases',
-        icon: '🧬',
+        icon: 'flask',
         color: '#10B981',
         diseases: [
             {
@@ -80,7 +76,6 @@ const DISEASE_CATEGORIES = [
                 symptoms: 'Mottled leaves, stunted growth, reduced yield',
                 causes: 'TMV virus, transmitted through handling',
                 prevention: 'Resistant varieties, hand washing, tool sterilization',
-                icon: '🟢'
             },
             {
                 name: 'Leaf Curl',
@@ -89,14 +84,13 @@ const DISEASE_CATEGORIES = [
                 symptoms: 'Upward curling leaves, purple veins, stunted plants',
                 causes: 'Whitefly-transmitted virus',
                 prevention: 'Control whiteflies, remove infected plants, resistant varieties',
-                icon: '🟣'
             },
         ]
     },
     {
         id: '4',
         category: 'Pest Damage',
-        icon: '🐛',
+        icon: 'warning',
         color: '#F59E0B',
         diseases: [
             {
@@ -106,7 +100,6 @@ const DISEASE_CATEGORIES = [
                 symptoms: 'Tiny yellow/white spots, fine webbing, leaf bronzing',
                 causes: 'Hot dry conditions favor mite populations',
                 prevention: 'Increase humidity, neem oil, predatory mites',
-                icon: '🕷️'
             },
             {
                 name: 'Aphids',
@@ -115,7 +108,6 @@ const DISEASE_CATEGORIES = [
                 symptoms: 'Clustered small insects, sticky honeydew, curled leaves',
                 causes: 'Rapid reproduction in spring, attracted to new growth',
                 prevention: 'Beneficial insects, insecticidal soap, strong water spray',
-                icon: '🐜'
             },
             {
                 name: 'Whiteflies',
@@ -124,14 +116,13 @@ const DISEASE_CATEGORIES = [
                 symptoms: 'Tiny white flying insects, sticky leaves, yellowing',
                 causes: 'Warm greenhouse conditions, dense plantings',
                 prevention: 'Yellow sticky traps, neem oil, parasitic wasps',
-                icon: '🦟'
             },
         ]
     },
     {
         id: '5',
         category: 'Nutrient Deficiencies',
-        icon: '⚗️',
+        icon: 'beaker',
         color: '#3B82F6',
         diseases: [
             {
@@ -141,7 +132,6 @@ const DISEASE_CATEGORIES = [
                 symptoms: 'Yellowing of older leaves, stunted growth',
                 causes: 'Poor soil, heavy rain leaching, rapid growth',
                 prevention: 'Balanced fertilizer, compost, legume cover crops',
-                icon: '💛'
             },
             {
                 name: 'Calcium Deficiency',
@@ -150,7 +140,6 @@ const DISEASE_CATEGORIES = [
                 symptoms: 'Blossom end rot, tip burn on leaves',
                 causes: 'Irregular watering, low soil calcium, high soil salt',
                 prevention: 'Consistent watering, lime addition, mulching',
-                icon: '🤎'
             },
         ]
     },
@@ -159,25 +148,21 @@ const DISEASE_CATEGORIES = [
 const COMMON_INSECTS = [
     {
         name: 'Japanese Beetle',
-        icon: '🪲',
         damage: 'Skeletonizes leaves, damages flowers',
         control: 'Hand picking, neem oil, milky spore disease'
     },
     {
         name: 'Caterpillars',
-        icon: '🐛',
         damage: 'Chewing holes in leaves and fruit',
         control: 'Bt spray, hand picking, beneficial wasps'
     },
     {
         name: 'Thrips',
-        icon: '🦟',
         damage: 'Silver streaks on leaves, deformed flowers',
         control: 'Blue sticky traps, neem oil, predatory mites'
     },
     {
         name: 'Leafminers',
-        icon: '🪰',
         damage: 'Winding trails inside leaves',
         control: 'Remove affected leaves, row covers, parasitic wasps'
     },
@@ -195,7 +180,9 @@ const DiseaseCard = ({ disease, color }: { disease: any; color: string }) => {
             >
                 <View style={styles.diseaseHeader}>
                     <View style={styles.diseaseHeaderLeft}>
-                        <Text style={styles.diseaseIcon}>{disease.icon}</Text>
+                        <View style={[styles.diseaseIconDot, { backgroundColor: color + '30' }]}>
+                            <View style={[styles.diseaseIconInner, { backgroundColor: color }]} />
+                        </View>
                         <View>
                             <Text style={[styles.diseaseName, { color: theme.colors.text }]}>
                                 {disease.name}
@@ -217,7 +204,7 @@ const DiseaseCard = ({ disease, color }: { disease: any; color: string }) => {
                 <View style={styles.diseaseDetails}>
                     <View style={styles.detailSection}>
                         <Text style={[styles.detailLabel, { color: theme.colors.text }]}>
-                            🔍 Symptoms
+                            Symptoms
                         </Text>
                         <Text style={[styles.detailText, { color: theme.colors.textSecondary }]}>
                             {disease.symptoms}
@@ -226,7 +213,7 @@ const DiseaseCard = ({ disease, color }: { disease: any; color: string }) => {
                     
                     <View style={styles.detailSection}>
                         <Text style={[styles.detailLabel, { color: theme.colors.text }]}>
-                            ⚠️ Causes
+                            Causes
                         </Text>
                         <Text style={[styles.detailText, { color: theme.colors.textSecondary }]}>
                             {disease.causes}
@@ -235,7 +222,7 @@ const DiseaseCard = ({ disease, color }: { disease: any; color: string }) => {
                     
                     <View style={styles.detailSection}>
                         <Text style={[styles.detailLabel, { color: theme.colors.text }]}>
-                            💊 Prevention & Treatment
+                            Prevention and Treatment
                         </Text>
                         <Text style={[styles.detailText, { color: theme.colors.textSecondary }]}>
                             {disease.prevention}
@@ -252,7 +239,9 @@ const InsectCard = ({ insect }: { insect: any }) => {
     
     return (
         <View style={[styles.insectCard, { backgroundColor: theme.colors.surface }]}>
-            <Text style={styles.insectIcon}>{insect.icon}</Text>
+            <View style={[styles.insectIconDot, { backgroundColor: '#F59E0B20' }]}>
+                <Ionicons name="bug-outline" size={20} color="#F59E0B" />
+            </View>
             <View style={styles.insectContent}>
                 <Text style={[styles.insectName, { color: theme.colors.text }]}>
                     {insect.name}
@@ -261,7 +250,7 @@ const InsectCard = ({ insect }: { insect: any }) => {
                     {insect.damage}
                 </Text>
                 <Text style={[styles.insectControl, { color: theme.colors.primary }]}>
-                    ✓ {insect.control}
+                    {insect.control}
                 </Text>
             </View>
         </View>
@@ -278,7 +267,7 @@ export default function SpeciesScreen() {
         <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
             {/* Header */}
             <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
-                <Text style={styles.headerIcon}>🌾</Text>
+                <Ionicons name="leaf" size={32} color="#FFFFFF" style={{ marginBottom: 8 }} />
                 <Text style={styles.title}>Disease Knowledge Hub</Text>
                 <Text style={styles.subtitle}>
                     Complete guide to plant diseases, pests, and prevention
@@ -303,7 +292,12 @@ export default function SpeciesScreen() {
                         ]}
                         onPress={() => setSelectedCategory(cat.id)}
                     >
-                        <Text style={styles.categoryIcon}>{cat.icon}</Text>
+                        <Ionicons
+                            name={(cat.icon + (selectedCategory === cat.id ? '' : '-outline')) as any}
+                            size={24}
+                            color={selectedCategory === cat.id ? '#FFFFFF' : theme.colors.text}
+                            style={{ marginBottom: 6 }}
+                        />
                         <Text
                             style={[
                                 styles.categoryText,
@@ -325,7 +319,7 @@ export default function SpeciesScreen() {
             >
                 {/* Disease List */}
                 <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                    {currentCategory?.icon} {currentCategory?.category}
+                    {currentCategory?.category}
                 </Text>
                 <Text style={[styles.sectionDesc, { color: theme.colors.textSecondary }]}>
                     {currentCategory?.diseases.length} diseases in this category
@@ -343,7 +337,7 @@ export default function SpeciesScreen() {
                 {selectedCategory === '4' && (
                     <>
                         <Text style={[styles.sectionTitle, { color: theme.colors.text, marginTop: 32 }]}>
-                            🐛 Common Agricultural Insects
+                            Common Agricultural Insects
                         </Text>
                         <Text style={[styles.sectionDesc, { color: theme.colors.textSecondary }]}>
                             Identify and control common garden pests
@@ -358,11 +352,11 @@ export default function SpeciesScreen() {
                 {/* Gardening Tips for Beginners */}
                 <View style={[styles.tipsSection, { backgroundColor: theme.colors.surface }]}>
                     <Text style={[styles.tipsSectionTitle, { color: theme.colors.text }]}>
-                        🌱 Gardening Tips for Beginners
+                        Gardening Tips for Beginners
                     </Text>
                     
                     <View style={styles.tipItem}>
-                        <Text style={styles.tipIcon}>💧</Text>
+                        <Ionicons name="water-outline" size={24} color={theme.colors.primary} style={{ marginRight: 12 }} />
                         <View style={styles.tipContent}>
                             <Text style={[styles.tipTitle, { color: theme.colors.text }]}>
                                 Water Wisely
@@ -374,7 +368,7 @@ export default function SpeciesScreen() {
                     </View>
 
                     <View style={styles.tipItem}>
-                        <Text style={styles.tipIcon}>🌍</Text>
+                        <Ionicons name="globe-outline" size={24} color={theme.colors.primary} style={{ marginRight: 12 }} />
                         <View style={styles.tipContent}>
                             <Text style={[styles.tipTitle, { color: theme.colors.text }]}>
                                 Soil Health First
@@ -386,7 +380,7 @@ export default function SpeciesScreen() {
                     </View>
 
                     <View style={styles.tipItem}>
-                        <Text style={styles.tipIcon}>🔄</Text>
+                        <Ionicons name="repeat-outline" size={24} color={theme.colors.primary} style={{ marginRight: 12 }} />
                         <View style={styles.tipContent}>
                             <Text style={[styles.tipTitle, { color: theme.colors.text }]}>
                                 Crop Rotation
@@ -398,7 +392,7 @@ export default function SpeciesScreen() {
                     </View>
 
                     <View style={styles.tipItem}>
-                        <Text style={styles.tipIcon}>🦋</Text>
+                        <Ionicons name="flower-outline" size={24} color={theme.colors.primary} style={{ marginRight: 12 }} />
                         <View style={styles.tipContent}>
                             <Text style={[styles.tipTitle, { color: theme.colors.text }]}>
                                 Encourage Beneficials
@@ -410,7 +404,7 @@ export default function SpeciesScreen() {
                     </View>
 
                     <View style={styles.tipItem}>
-                        <Text style={styles.tipIcon}>📅</Text>
+                        <Ionicons name="calendar-outline" size={24} color={theme.colors.primary} style={{ marginRight: 12 }} />
                         <View style={styles.tipContent}>
                             <Text style={[styles.tipTitle, { color: theme.colors.text }]}>
                                 Know Your Zone
@@ -422,7 +416,7 @@ export default function SpeciesScreen() {
                     </View>
 
                     <View style={styles.tipItem}>
-                        <Text style={styles.tipIcon}>✂️</Text>
+                        <Ionicons name="cut-outline" size={24} color={theme.colors.primary} style={{ marginRight: 12 }} />
                         <View style={styles.tipContent}>
                             <Text style={[styles.tipTitle, { color: theme.colors.text }]}>
                                 Prune Properly
@@ -541,6 +535,19 @@ const styles = StyleSheet.create({
         fontSize: 28,
         marginRight: 14,
     },
+    diseaseIconDot: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        alignItems: 'center' as const,
+        justifyContent: 'center' as const,
+        marginRight: 14,
+    },
+    diseaseIconInner: {
+        width: 14,
+        height: 14,
+        borderRadius: 7,
+    },
     diseaseName: {
         fontSize: 17,
         fontWeight: '700',
@@ -595,6 +602,14 @@ const styles = StyleSheet.create({
     },
     insectIcon: {
         fontSize: 36,
+        marginRight: 16,
+    },
+    insectIconDot: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        alignItems: 'center' as const,
+        justifyContent: 'center' as const,
         marginRight: 16,
     },
     insectContent: {

@@ -797,13 +797,13 @@ const softmax = (logits: number[]): number[] => {
  */
 export const loadOfflineModel = async (): Promise<boolean> => {
   try {
-    console.log('🔄 Loading offline prediction engine...');
-    console.log('📱 Using pure JavaScript color-based analysis');
-    console.log('✅ Offline prediction engine ready!');
+    console.log('Loading offline prediction engine...');
+    console.log('Using pure JavaScript color-based analysis');
+    console.log('Offline prediction engine ready');
     modelReady = true;
     return true;
   } catch (error: any) {
-    console.error('❌ Failed to initialize offline model:', error);
+    console.error('Failed to initialize offline model:', error);
     modelReady = true; // Still allow app to work
     return true;
   }
@@ -872,15 +872,15 @@ export const predictOffline = async (imageUri: string): Promise<{
   allPredictions?: Array<{ class: string; confidence: number }>;
 }> => {
   try {
-    console.log('🔍 Running offline prediction...');
-    console.log('📷 Image URI:', imageUri.substring(0, 50) + '...');
+    console.log('Running offline prediction...');
+    console.log('Image URI:', imageUri.substring(0, 50) + '...');
     
     // Preprocess the image
     const { data, width, height } = await preprocessImage(imageUri);
-    console.log(`📐 Image preprocessed: ${width}x${height}`);
+    console.log(`Image preprocessed: ${width}x${height}`);
     
     // Generate predictions using advanced color analysis
-    console.log('🎨 Analyzing image colors and patterns...');
+    console.log('Analyzing image colors and patterns...');
     const predictions = analyzeImageForDisease(data);
     
     // Apply softmax to get probabilities
@@ -911,7 +911,7 @@ export const predictOffline = async (imageUri: string): Promise<{
     const diseaseInfo = getDiseaseInfo(predictedClass);
     const isHealthy = predictedClass.toLowerCase().includes('healthy');
     
-    console.log(`✅ Prediction: ${predictedClass} (${confidence}%)`);
+    console.log(`Prediction: ${predictedClass} (${confidence}%)`);
     console.log(`   Top 3: ${allPreds.slice(0, 3).map(p => `${p.class}: ${p.confidence}%`).join(', ')}`);
     
     return {
@@ -926,7 +926,7 @@ export const predictOffline = async (imageUri: string): Promise<{
     };
     
   } catch (error: any) {
-    console.error('❌ Offline prediction error:', error);
+    console.error('Offline prediction error:', error);
     throw new Error(`Offline prediction failed: ${error.message}`);
   }
 };

@@ -14,6 +14,7 @@ import {
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useTheme } from '../context/ThemeContext';
+import { Ionicons } from '@expo/vector-icons';
 
 const { width, height } = Dimensions.get('window');
 const MAX_IMAGES = 10;
@@ -46,7 +47,7 @@ export default function FewShotCamera({ onComplete, onCancel }: FewShotCameraPro
         return (
             <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
                 <View style={styles.permissionContent}>
-                    <Text style={styles.permissionIcon}>📷</Text>
+                    <Ionicons name="camera-outline" size={64} color="#6B7280" style={{ marginBottom: 24 }} />
                     <Text style={[styles.permissionTitle, { color: theme.colors.text }]}>
                         Camera Access Required
                     </Text>
@@ -186,7 +187,7 @@ export default function FewShotCamera({ onComplete, onCancel }: FewShotCameraPro
                 <View style={styles.instructionsOverlay}>
                     <View style={styles.instructionBox}>
                         <Text style={styles.instructionText}>
-                            📸 Capture {MIN_IMAGES}-{MAX_IMAGES} clear photos of the diseased plant
+                            Capture {MIN_IMAGES}-{MAX_IMAGES} clear photos of the diseased plant
                         </Text>
                         <Text style={styles.instructionSubtext}>
                             Different angles • Good lighting • Focus on symptoms
@@ -256,7 +257,7 @@ export default function FewShotCamera({ onComplete, onCancel }: FewShotCameraPro
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.secondaryButton} onPress={pickFromGallery}>
-                    <Text style={styles.secondaryButtonIcon}>🖼️</Text>
+                    <Ionicons name="images-outline" size={28} color="#FFFFFF" />
                     <Text style={[styles.secondaryButtonText, { color: theme.colors.textSecondary }]}>
                         Gallery
                     </Text>
@@ -391,9 +392,9 @@ export default function FewShotCamera({ onComplete, onCancel }: FewShotCameraPro
                             style={[styles.submitButton, { backgroundColor: theme.colors.primary }]}
                             onPress={handleSubmit}
                         >
-                            <Text style={styles.submitButtonIcon}>🚀</Text>
+                            <Ionicons name="arrow-forward-circle-outline" size={24} color="#FFFFFF" style={{ marginRight: 12 }} />
                             <Text style={styles.submitButtonText}>
-                                Submit for AI Training
+                                Submit for Training
                             </Text>
                         </TouchableOpacity>
                     </View>

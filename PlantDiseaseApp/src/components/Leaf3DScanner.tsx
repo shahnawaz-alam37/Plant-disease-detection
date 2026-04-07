@@ -111,9 +111,9 @@ export const Leaf3DScanner: React.FC = () => {
         <AnimatedSvg width={LEAF_SIZE} height={LEAF_SIZE} viewBox="0 0 200 200">
           <Defs>
             <RadialGradient id="leafGradient" cx="50%" cy="50%" r="50%">
-              <Stop offset="0%" stopColor={DesignTokens.colors.aiGreen} stopOpacity="0.9" />
-              <Stop offset="50%" stopColor={DesignTokens.colors.aiGreenDark} stopOpacity="0.7" />
-              <Stop offset="100%" stopColor={DesignTokens.colors.aiGreenDark} stopOpacity="0.5" />
+              <Stop offset="0%" stopColor={DesignTokens.colors.primary} stopOpacity="0.9" />
+              <Stop offset="50%" stopColor={DesignTokens.colors.primaryDark} stopOpacity="0.7" />
+              <Stop offset="100%" stopColor={DesignTokens.colors.primaryDark} stopOpacity="0.5" />
             </RadialGradient>
           </Defs>
 
@@ -121,7 +121,7 @@ export const Leaf3DScanner: React.FC = () => {
           <Path
             d="M100,20 C120,20 160,40 180,80 C200,120 180,160 140,180 C120,190 80,190 60,180 C20,160 0,120 20,80 C40,40 80,20 100,20 Z"
             fill="url(#leafGradient)"
-            stroke={DesignTokens.colors.aiGreen}
+            stroke={DesignTokens.colors.primary}
             strokeWidth="2"
             opacity="0.8"
           />
@@ -129,7 +129,7 @@ export const Leaf3DScanner: React.FC = () => {
           {/* Leaf veins */}
           <Path
             d="M100,40 L100,160 M60,80 Q100,90 140,80 M60,120 Q100,125 140,120"
-            stroke={DesignTokens.colors.aiGreenLight}
+            stroke={DesignTokens.colors.primaryLight}
             strokeWidth="1.5"
             opacity="0.6"
             fill="none"
@@ -140,7 +140,7 @@ export const Leaf3DScanner: React.FC = () => {
             cx="100"
             cy="100"
             r="30"
-            fill={DesignTokens.colors.aiGreenGlow}
+            fill={DesignTokens.colors.primaryGlow}
             opacity="0.5"
           />
         </AnimatedSvg>
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     borderRadius: 9999,
     borderWidth: 2,
-    borderColor: DesignTokens.colors.aiGreenGlow,
+    borderColor: DesignTokens.colors.primaryGlow,
   },
   glowRingOuter: {
     width: LEAF_SIZE * 1.3,
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: 1,
-    backgroundColor: DesignTokens.colors.aiGreen,
+    backgroundColor: DesignTokens.colors.primary,
     top: 0,
   },
   gridLineVertical: {
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 30,
     height: 30,
-    borderColor: DesignTokens.colors.aiGreen,
+    borderColor: DesignTokens.colors.primary,
     borderWidth: 2,
   },
   bracketTopLeft: {

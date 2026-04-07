@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 1,
-    backgroundColor: DesignTokens.colors.aiGreen,
+    backgroundColor: DesignTokens.colors.primary,
     opacity: 0.3,
     borderTopLeftRadius: DesignTokens.borderRadius.xl,
     borderTopRightRadius: DesignTokens.borderRadius.xl,

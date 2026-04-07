@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, SafeAreaView, Platform, StatusBar } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../context/ThemeContext';
 import RealisticHeroFallback from '../components/RealisticHeroFallback';
@@ -30,17 +31,17 @@ export default function HomeScreen() {
             {/* Stats Cards */}
             <View style={styles.statsContainer}>
                 <View style={[styles.statCard, { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.primary }]}>
-                    <Text style={styles.statEmoji}>🦠</Text>
+                    <Ionicons name="bug-outline" size={24} color={theme.colors.primary} style={{ marginBottom: 6 }} />
                     <Text style={[styles.statNumber, { color: theme.colors.primary }]}>38+</Text>
                     <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>Diseases</Text>
                 </View>
                 <View style={[styles.statCard, { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.accent }]}>
-                    <Text style={styles.statEmoji}>🌿</Text>
+                    <Ionicons name="leaf-outline" size={24} color={theme.colors.accent} style={{ marginBottom: 6 }} />
                     <Text style={[styles.statNumber, { color: theme.colors.primary }]}>15+</Text>
                     <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>Species</Text>
                 </View>
                 <View style={[styles.statCard, { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.success }]}>
-                    <Text style={styles.statEmoji}>🎯</Text>
+                    <Ionicons name="checkmark-done-outline" size={24} color={theme.colors.success} style={{ marginBottom: 6 }} />
                     <Text style={[styles.statNumber, { color: theme.colors.primary }]}>95%</Text>
                     <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>Accuracy</Text>
                 </View>
@@ -55,7 +56,7 @@ export default function HomeScreen() {
                     activeOpacity={0.9}
                 >
                     <View style={styles.demoIconContainer}>
-                        <Text style={styles.demoIcon}>🎬</Text>
+                        <Ionicons name="videocam-outline" size={32} color="#10B981" />
                         <View style={styles.playIndicator}>
                             <Text style={styles.playIcon}>▶</Text>
                         </View>
@@ -74,22 +75,22 @@ export default function HomeScreen() {
 
                 {/* Features Grid */}
                 <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                    ✨ Powerful Features
+                    What You Can Do
                 </Text>
                 
                 <View style={styles.featuresGrid}>
                     <View style={[styles.featureCard, { backgroundColor: theme.colors.surface }]}>
-                        <Text style={styles.featureIcon}>🤖</Text>
+                        <Ionicons name="scan-outline" size={32} color={theme.colors.primary} style={{ marginBottom: 10 }} />
                         <Text style={[styles.featureTitle, { color: theme.colors.text }]}>
-                            AI Detection
+                            Smart Detection
                         </Text>
                         <Text style={[styles.featureDesc, { color: theme.colors.textSecondary }]}>
-                            Advanced deep learning model
+                            Deep learning plant analysis
                         </Text>
                     </View>
 
                     <View style={[styles.featureCard, { backgroundColor: theme.colors.surface }]}>
-                        <Text style={styles.featureIcon}>⚡</Text>
+                        <Ionicons name="flash-outline" size={32} color={theme.colors.primary} style={{ marginBottom: 10 }} />
                         <Text style={[styles.featureTitle, { color: theme.colors.text }]}>
                             Instant Results
                         </Text>
@@ -99,9 +100,9 @@ export default function HomeScreen() {
                     </View>
 
                     <View style={[styles.featureCard, { backgroundColor: theme.colors.surface }]}>
-                        <Text style={styles.featureIcon}>💊</Text>
+                        <Ionicons name="medkit-outline" size={32} color={theme.colors.primary} style={{ marginBottom: 10 }} />
                         <Text style={[styles.featureTitle, { color: theme.colors.text }]}>
-                            Treatment Tips
+                            Treatment Plans
                         </Text>
                         <Text style={[styles.featureDesc, { color: theme.colors.textSecondary }]}>
                             Detailed prevention guide
@@ -109,19 +110,19 @@ export default function HomeScreen() {
                     </View>
 
                     <View style={[styles.featureCard, { backgroundColor: theme.colors.surface }]}>
-                        <Text style={styles.featureIcon}>📚</Text>
+                        <Ionicons name="book-outline" size={32} color={theme.colors.primary} style={{ marginBottom: 10 }} />
                         <Text style={[styles.featureTitle, { color: theme.colors.text }]}>
-                            Learn & Grow
+                            Learn and Grow
                         </Text>
                         <Text style={[styles.featureDesc, { color: theme.colors.textSecondary }]}>
-                            Expert gardening tips
+                            Expert gardening knowledge
                         </Text>
                     </View>
                 </View>
 
                 {/* Quick Access */}
                 <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                    🚀 Quick Access
+                    Explore
                 </Text>
 
                 <TouchableOpacity
@@ -129,7 +130,7 @@ export default function HomeScreen() {
                     onPress={() => navigation.navigate('Knowledge Hub' as never)}
                 >
                     <View style={[styles.quickIconBg, { backgroundColor: theme.colors.primary + '20' }]}>
-                        <Text style={styles.quickIcon}>🌾</Text>
+                        <Ionicons name="library-outline" size={28} color={theme.colors.primary} />
                     </View>
                     <View style={styles.quickContent}>
                         <Text style={[styles.quickTitle, { color: theme.colors.text }]}>
@@ -147,14 +148,14 @@ export default function HomeScreen() {
                     onPress={() => navigation.navigate('Learn New' as never)}
                 >
                     <View style={[styles.quickIconBg, { backgroundColor: theme.colors.accent + '20' }]}>
-                        <Text style={styles.quickIcon}>🧠</Text>
+                        <Ionicons name="bulb-outline" size={28} color={theme.colors.accent} />
                     </View>
                     <View style={styles.quickContent}>
                         <Text style={[styles.quickTitle, { color: theme.colors.text }]}>
                             Few-Shot Learning
                         </Text>
                         <Text style={[styles.quickDesc, { color: theme.colors.textSecondary }]}>
-                            Train AI on new diseases with just 5-10 images
+                            Train the model on new diseases with just 5-10 images
                         </Text>
                     </View>
                     <Text style={[styles.arrow, { color: theme.colors.accent }]}>→</Text>
@@ -165,7 +166,7 @@ export default function HomeScreen() {
                     onPress={() => navigation.navigate('AboutTab')}
                 >
                     <View style={[styles.quickIconBg, { backgroundColor: theme.colors.success + '20' }]}>
-                        <Text style={styles.quickIcon}>📖</Text>
+                        <Ionicons name="help-circle-outline" size={28} color={theme.colors.success} />
                     </View>
                     <View style={styles.quickContent}>
                         <Text style={[styles.quickTitle, { color: theme.colors.text }]}>
@@ -180,26 +181,26 @@ export default function HomeScreen() {
 
                 {/* Plant Care Tips */}
                 <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                    💚 Daily Plant Care Tips
+                    Daily Plant Care
                 </Text>
 
                 <View style={[styles.tipCard, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={styles.tipEmoji}>💧</Text>
+                    <Ionicons name="water-outline" size={32} color={theme.colors.primary} style={{ marginRight: 16 }} />
                     <View style={styles.tipContent}>
                         <Text style={[styles.tipTitle, { color: theme.colors.text }]}>
-                            Watering Wisdom
+                            Watering Basics
                         </Text>
                         <Text style={[styles.tipText, { color: theme.colors.textSecondary }]}>
-                            Check soil moisture before watering. Most plants prefer slightly moist soil. Overwatering is the #1 cause of plant death.
+                            Check soil moisture before watering. Most plants prefer slightly moist soil. Overwatering is the top cause of plant death.
                         </Text>
                     </View>
                 </View>
 
                 <View style={[styles.tipCard, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={styles.tipEmoji}>☀️</Text>
+                    <Ionicons name="sunny-outline" size={32} color={theme.colors.primary} style={{ marginRight: 16 }} />
                     <View style={styles.tipContent}>
                         <Text style={[styles.tipTitle, { color: theme.colors.text }]}>
-                            Perfect Lighting
+                            Lighting
                         </Text>
                         <Text style={[styles.tipText, { color: theme.colors.textSecondary }]}>
                             Most plants thrive in bright, indirect light. Rotate plants weekly for even growth.

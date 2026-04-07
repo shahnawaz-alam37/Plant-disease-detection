@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Alert, ActivityIndicator } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import FewShotCamera from '../components/FewShotCamera';
 
@@ -43,7 +44,7 @@ const ArticleCard = ({
                 onPress={() => setExpanded(!expanded)}
             >
                 <View style={[styles.articleIconBg, { backgroundColor: theme.colors.primary + '20' }]}>
-                    <Text style={styles.articleIcon}>{icon}</Text>
+                    <Ionicons name={(icon + '-outline') as any} size={24} color={theme.colors.primary} />
                 </View>
                 <View style={styles.articleContent}>
                     <View style={styles.articleMeta}>
@@ -130,8 +131,8 @@ export default function LearnNewScreen() {
             await new Promise(resolve => setTimeout(resolve, 3000));
             
             Alert.alert(
-                '🎉 Training Complete!',
-                `Successfully trained AI model on "${diseaseName || 'new disease'}". The model can now detect this disease in future scans.`,
+                'Training Complete',
+                `Successfully trained the model on "${diseaseName || 'new disease'}". The model can now detect this disease in future scans.`,
                 [
                     {
                         text: 'Great!',
@@ -167,7 +168,7 @@ export default function LearnNewScreen() {
         >
             {/* Header */}
             <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
-                <Text style={styles.headerIcon}>🧠</Text>
+                <Ionicons name="bulb-outline" size={36} color="#FFFFFF" style={{ marginBottom: 8 }} />
                 <Text style={styles.headerTitle}>Few-Shot Learning</Text>
                 <Text style={styles.headerSubtitle}>
                     Train AI on new diseases with minimal data
@@ -177,12 +178,12 @@ export default function LearnNewScreen() {
             {/* Few-Shot Learning Hero */}
             <View style={[styles.heroCard, { backgroundColor: theme.colors.surface }]}>
                 <View style={styles.heroContent}>
-                    <Text style={styles.heroEmoji}>🚀</Text>
+                    <Ionicons name="telescope-outline" size={36} color={theme.colors.primary} style={{ marginBottom: 12 }} />
                     <Text style={[styles.heroTitle, { color: theme.colors.text }]}>
-                        Revolutionary AI Feature
+                        Few-Shot Learning
                     </Text>
                     <Text style={[styles.heroDesc, { color: theme.colors.textSecondary }]}>
-                        Our advanced few-shot learning algorithm can identify new plant diseases with just 5-10 example images. Upload photos of an unknown disease, and our AI will learn to detect it!
+                        Train the model to identify new plant diseases with just 5-10 example images. Upload photos of an unknown disease and the system will learn to detect it.
                     </Text>
                 </View>
             </View>
@@ -190,7 +191,7 @@ export default function LearnNewScreen() {
             {/* How It Works */}
             <View style={styles.section}>
                 <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                    🎯 How Few-Shot Learning Works
+                    How Few-Shot Learning Works
                 </Text>
 
                 <View style={[styles.stepCard, { backgroundColor: theme.colors.surface }]}>
@@ -267,13 +268,13 @@ export default function LearnNewScreen() {
             {/* Training Interface */}
             <View style={styles.section}>
                 <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                    📸 Train on New Disease
+                    Train on New Disease
                 </Text>
 
                 <View style={[styles.trainingCard, { backgroundColor: theme.colors.surface }]}>
                     {capturedImages.length === 0 ? (
                         <View style={[styles.uploadArea, { backgroundColor: theme.colors.background, borderColor: theme.colors.border }]}>
-                            <Text style={styles.uploadIcon}>📤</Text>
+                            <Ionicons name="cloud-upload-outline" size={36} color={theme.colors.textLight} style={{ marginBottom: 12 }} />
                             <Text style={[styles.uploadText, { color: theme.colors.text }]}>
                                 Capture Disease Images
                             </Text>
@@ -285,7 +286,7 @@ export default function LearnNewScreen() {
                                 onPress={handleStartCapture}
                             >
                                 <Text style={styles.uploadButtonText}>
-                                    📷 Open Camera
+                                    Open Camera
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -308,7 +309,7 @@ export default function LearnNewScreen() {
                                 onPress={handleStartCapture}
                             >
                                 <Text style={[styles.recaptureText, { color: theme.colors.primary }]}>
-                                    📷 Capture More Images
+                                    Capture More Images
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -337,7 +338,7 @@ export default function LearnNewScreen() {
                         <View style={styles.trainingInProgress}>
                             <ActivityIndicator size="large" color={theme.colors.primary} />
                             <Text style={[styles.trainingText, { color: theme.colors.text }]}>
-                                🤖 Training AI Model...
+                                Training Model...
                             </Text>
                             <Text style={[styles.trainingSubtext, { color: theme.colors.textSecondary }]}>
                                 This may take a few minutes
@@ -358,7 +359,7 @@ export default function LearnNewScreen() {
                                 styles.trainButtonText,
                                 { color: capturedImages.length >= 5 ? '#FFFFFF' : theme.colors.textLight }
                             ]}>
-                                🚀 Start AI Training
+                                Start Training
                             </Text>
                         </TouchableOpacity>
                     )}
@@ -368,11 +369,11 @@ export default function LearnNewScreen() {
             {/* Benefits Section */}
             <View style={styles.section}>
                 <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                    ✨ Why Few-Shot Learning is Powerful
+                    Why Few-Shot Learning Works
                 </Text>
 
                 <View style={[styles.benefitCard, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={styles.benefitIcon}>⚡</Text>
+                    <Ionicons name="flash-outline" size={28} color={theme.colors.primary} style={{ marginRight: 14 }} />
                     <View style={styles.benefitContent}>
                         <Text style={[styles.benefitTitle, { color: theme.colors.text }]}>
                             Minimal Data Required
@@ -384,7 +385,7 @@ export default function LearnNewScreen() {
                 </View>
 
                 <View style={[styles.benefitCard, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={styles.benefitIcon}>🔬</Text>
+                    <Ionicons name="flask-outline" size={28} color={theme.colors.primary} style={{ marginRight: 14 }} />
                     <View style={styles.benefitContent}>
                         <Text style={[styles.benefitTitle, { color: theme.colors.text }]}>
                             Rare Disease Detection
@@ -396,7 +397,7 @@ export default function LearnNewScreen() {
                 </View>
 
                 <View style={[styles.benefitCard, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={styles.benefitIcon}>🌍</Text>
+                    <Ionicons name="globe-outline" size={28} color={theme.colors.primary} style={{ marginRight: 14 }} />
                     <View style={styles.benefitContent}>
                         <Text style={[styles.benefitTitle, { color: theme.colors.text }]}>
                             Community Knowledge
@@ -408,13 +409,13 @@ export default function LearnNewScreen() {
                 </View>
 
                 <View style={[styles.benefitCard, { backgroundColor: theme.colors.surface }]}>
-                    <Text style={styles.benefitIcon}>🤖</Text>
+                    <Ionicons name="analytics-outline" size={28} color={theme.colors.primary} style={{ marginRight: 14 }} />
                     <View style={styles.benefitContent}>
                         <Text style={[styles.benefitTitle, { color: theme.colors.text }]}>
-                            AI-Powered Insights
+                            Automated Insights
                         </Text>
                         <Text style={[styles.benefitDesc, { color: theme.colors.textSecondary }]}>
-                            AI automatically generates symptoms, causes, and prevention strategies from learned patterns.
+                            The model automatically identifies symptoms, causes, and prevention strategies from learned patterns.
                         </Text>
                     </View>
                 </View>
@@ -423,11 +424,11 @@ export default function LearnNewScreen() {
             {/* Learning Resources */}
             <View style={styles.section}>
                 <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                    📚 Learn Plant Care & Disease Prevention
+                    Plant Care and Disease Prevention
                 </Text>
 
                 <ArticleCard
-                    icon="💧"
+                    icon="water"
                     title="Watering 101: Complete Beginner's Guide"
                     category="Fundamentals"
                     readTime="5 min"
@@ -473,7 +474,7 @@ export default function LearnNewScreen() {
                 />
 
                 <ArticleCard
-                    icon="🌍"
+                    icon="globe"
                     title="Understanding Soil pH and Nutrients"
                     category="Soil Health"
                     readTime="6 min"
@@ -525,7 +526,7 @@ export default function LearnNewScreen() {
                 />
 
                 <ArticleCard
-                    icon="🦠"
+                    icon="bug"
                     title="Common Plant Diseases & Early Detection"
                     category="Disease Prevention"
                     readTime="8 min"
@@ -589,7 +590,7 @@ export default function LearnNewScreen() {
                 />
 
                 <ArticleCard
-                    icon="🔬"
+                    icon="flask"
                     title="Integrated Pest Management (IPM)"
                     category="Advanced"
                     readTime="10 min"
@@ -667,7 +668,7 @@ export default function LearnNewScreen() {
                 />
 
                 <ArticleCard
-                    icon="🌱"
+                    icon="leaf"
                     title="Organic Disease Prevention Methods"
                     category="Organic Farming"
                     readTime="7 min"
@@ -750,11 +751,11 @@ export default function LearnNewScreen() {
             {/* Expert Tips */}
             <View style={[styles.tipsSection, { backgroundColor: theme.colors.surface }]}>
                 <Text style={[styles.tipsSectionTitle, { color: theme.colors.text }]}>
-                    💡 Expert Tips for Success
+                    Expert Tips for Success
                 </Text>
                 
                 <View style={styles.tipItem}>
-                    <Text style={styles.tipIcon}>📸</Text>
+                    <Ionicons name="camera-outline" size={22} color={theme.colors.primary} style={{ marginRight: 12 }} />
                     <View style={styles.tipContent}>
                         <Text style={[styles.tipTitle, { color: theme.colors.text }]}>
                             Capture Clear Symptoms
@@ -766,7 +767,7 @@ export default function LearnNewScreen() {
                 </View>
 
                 <View style={styles.tipItem}>
-                    <Text style={styles.tipIcon}>🔄</Text>
+                    <Ionicons name="repeat-outline" size={22} color={theme.colors.primary} style={{ marginRight: 12 }} />
                     <View style={styles.tipContent}>
                         <Text style={[styles.tipTitle, { color: theme.colors.text }]}>
                             Multiple Angles
@@ -778,7 +779,7 @@ export default function LearnNewScreen() {
                 </View>
 
                 <View style={styles.tipItem}>
-                    <Text style={styles.tipIcon}>✅</Text>
+                    <Ionicons name="checkmark-circle-outline" size={22} color={theme.colors.primary} style={{ marginRight: 12 }} />
                     <View style={styles.tipContent}>
                         <Text style={[styles.tipTitle, { color: theme.colors.text }]}>
                             Quality Over Quantity

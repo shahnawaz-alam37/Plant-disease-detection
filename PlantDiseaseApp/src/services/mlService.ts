@@ -15,14 +15,14 @@ type InferenceMode = 'offline' | 'online' | 'auto';
 let INFERENCE_MODE: InferenceMode = 'online'; // Default to online for best accuracy with enhanced server
 
 // SERVER CONFIGURATION (used when INFERENCE_MODE is 'online' or 'auto' fails offline)
-let SERVER_URL = "http://192.168.0.115:5000/predict";  // Your PC IP
+let SERVER_URL = "http://192.168.1.7:5000/predict";  // Current PC LAN IP
 
 // Fallback URLs to try in order
 const FALLBACK_URLS = [
-    "http://192.168.0.115:5000/predict",
-    "http://192.168.0.115:5000/predict",  // Android emulator
-    "http://192.168.0.115:5000/predict",
+    "http://192.168.1.7:5000/predict",
+    "http://10.0.2.2:5000/predict",  // Android emulator
     "http://localhost:5000/predict",
+    "http://127.0.0.1:5000/predict",
 ];
 
 // Enhanced options
@@ -43,7 +43,7 @@ let serverAvailable = false;
  */
 export const setInferenceMode = (mode: InferenceMode) => {
     INFERENCE_MODE = mode;
-    console.log(`🔧 Inference mode set to: ${mode}`);
+    console.log(`Inference mode set to: ${mode}`);
 };
 
 export const getInferenceMode = () => INFERENCE_MODE;
@@ -61,25 +61,25 @@ export const getServerURL = () => SERVER_URL;
 
 export const loadModel = async (): Promise<boolean> => {
     console.log("=" .repeat(60));
-    console.log(`🌿 Plant Disease ML Service - Mode: ${INFERENCE_MODE}`);
+    console.log(`Plant Disease ML Service - Mode: ${INFERENCE_MODE}`);
     console.log("=" .repeat(60));
     
     // Always try to load offline model first
-    console.log("\n📱 Loading offline prediction engine...");
+    console.log("\nLoading offline prediction engine...");
     try {
         offlineModelLoaded = await loadOfflineModel();
         if (offlineModelLoaded) {
-            console.log("✅ Offline prediction engine ready!");
+            console.log("Offline prediction engine ready");
             console.log("   Using color-based image analysis");
         }
     } catch (e: any) {
-        console.warn("⚠️ Offline engine load failed:", e.message);
+        console.warn("Offline engine load failed:", e.message);
         offlineModelLoaded = false;
     }
     
     // Check server if needed
     if (INFERENCE_MODE === 'online' || INFERENCE_MODE === 'auto') {
-        console.log("\n🌐 Checking server connectivity...");
+        console.log("\nChecking server connectivity...");
         try {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -93,22 +93,22 @@ export const loadModel = async (): Promise<boolean> => {
             serverAvailable = response.ok;
             
             if (serverAvailable) {
-                console.log(`✅ Server available at ${SERVER_URL}`);
+                console.log(`Server available at ${SERVER_URL}`);
             } else {
-                console.log(`⚠️ Server not reachable at ${SERVER_URL}`);
+                console.log(`Server not reachable at ${SERVER_URL}`);
             }
         } catch (e) {
             serverAvailable = false;
-            console.warn("⚠️ Server check failed");
+            console.warn("Server check failed");
         }
     }
     
     // Summary
     console.log("\n" + "=" .repeat(60));
-    console.log("📊 ML Service Status:");
+    console.log("ML Service Status:");
     console.log(`   • Mode: ${INFERENCE_MODE}`);
-    console.log(`   • Offline Engine: ${offlineModelLoaded ? '✅ Ready' : '❌ Not loaded'}`);
-    console.log(`   • Server: ${serverAvailable ? '✅ Available' : '❌ Not available'}`);
+    console.log(`   • Offline Engine: ${offlineModelLoaded ? 'Ready' : 'Not loaded'}`);
+    console.log(`   • Server: ${serverAvailable ? 'Available' : 'Not available'}`);
     console.log("=" .repeat(60) + "\n");
     
     return offlineModelLoaded || serverAvailable;
@@ -134,20 +134,20 @@ export const predict = async (imageUri: string): Promise<{
     };
     topPredictions?: Array<{ class: string; confidence: number; raw_class?: string }>;
 }> => {
-    console.log("\n🔍 Starting prediction...");
+    console.log("\nStarting prediction...");
     console.log(`   Mode: ${INFERENCE_MODE}`);
     console.log(`   Image: ${imageUri.substring(0, 50)}...`);
     
     // In online mode, always try server first (don't rely on cached availability)
     if (INFERENCE_MODE === 'online') {
-        console.log("🌐 Using ONLINE inference (Server)");
+        console.log("Using ONLINE inference (Server)");
         try {
             return await predictOnServer(imageUri);
         } catch (error: any) {
-            console.error("❌ Server prediction failed:", error.message);
+            console.error("Server prediction failed:", error.message);
             // Try offline as fallback
             if (offlineModelLoaded) {
-                console.log("🔄 Falling back to offline mode...");
+                console.log("Falling back to offline mode...");
                 const result = await predictOffline(imageUri);
                 return { ...result, mode: 'offline' };
             }
@@ -160,7 +160,7 @@ export const predict = async (imageUri: string): Promise<{
                        (INFERENCE_MODE === 'auto' && offlineModelLoaded);
     
     if (useOffline && offlineModelLoaded) {
-        console.log("📱 Using OFFLINE inference (TFLite)");
+        console.log("Using OFFLINE inference (TFLite)");
         try {
             const result = await predictOffline(imageUri);
             return {
@@ -168,17 +168,17 @@ export const predict = async (imageUri: string): Promise<{
                 mode: 'offline'
             };
         } catch (error: any) {
-            console.error("❌ Offline prediction failed:", error.message);
+            console.error("Offline prediction failed:", error.message);
             
             // Fall back to server if in auto mode
             if (INFERENCE_MODE === 'auto') {
-                console.log("🔄 Falling back to server...");
+                console.log("Falling back to server...");
                 return await predictOnServer(imageUri);
             }
             throw error;
         }
     } else if (INFERENCE_MODE === 'auto') {
-        console.log("🌐 Using ONLINE inference (Server)");
+        console.log("Using ONLINE inference (Server)");
         return await predictOnServer(imageUri);
     } else {
         throw new Error('No inference method available. Check model/server.');
@@ -204,8 +204,8 @@ const predictOnServer = async (imageUri: string): Promise<{
     try {
         // Build URL with TTA option
         const url = USE_TTA ? `${SERVER_URL}?tta=true` : SERVER_URL;
-        console.log(`📤 Sending image to ${url}...`);
-        console.log(`📷 Original image URI: ${imageUri}`);
+        console.log(`Sending image to ${url}...`);
+        console.log(`Original image URI: ${imageUri}`);
 
         // Enhanced preprocessing - larger resize with better quality
         // Add timestamp to prevent caching issues
@@ -221,7 +221,7 @@ const predictOnServer = async (imageUri: string): Promise<{
                 compress: 0.95  // Higher quality compression
             }
         );
-        console.log("📐 Image preprocessed:", manipResult.uri);
+        console.log("Image preprocessed:", manipResult.uri);
 
         const formData = new FormData();
         // Use unique filename with timestamp to prevent caching
@@ -247,7 +247,7 @@ const predictOnServer = async (imageUri: string): Promise<{
         });
 
         clearTimeout(timeoutId);
-        console.log("📥 Server response status:", response.status);
+        console.log("Server response status:", response.status);
 
         if (!response.ok) {
             const text = await response.text();
@@ -256,7 +256,7 @@ const predictOnServer = async (imageUri: string): Promise<{
         }
 
         const result = await response.json();
-        console.log("📋 Raw server result:", JSON.stringify(result));
+        console.log("Raw server result:", JSON.stringify(result));
 
         // Extract confidence (use calibrated if available)
         let confidence = Number(result.confidence) || Number(result.raw_confidence) || 0;
@@ -281,7 +281,7 @@ const predictOnServer = async (imageUri: string): Promise<{
             
             // Log quality issues
             if (result.quality.issues && result.quality.issues.length > 0) {
-                console.log(`⚠️ Image quality issues: ${result.quality.issues.join(', ')}`);
+                console.log(`Image quality issues: ${result.quality.issues.join(', ')}`);
             }
         }
         
@@ -290,11 +290,11 @@ const predictOnServer = async (imageUri: string): Promise<{
             normalizedResult.topPredictions = result.top_predictions;
         }
         
-        console.log("✅ Server prediction:", normalizedResult.class, `(${normalizedResult.confidence}%)`);
+        console.log("Server prediction:", normalizedResult.class, `(${normalizedResult.confidence}%)`);
         return normalizedResult;
 
     } catch (error: any) {
-        console.error("❌ Server prediction error:", error);
+        console.error("Server prediction error:", error);
         
         if (error.name === 'AbortError') {
             throw new Error('Request timeout - server took too long to respond');

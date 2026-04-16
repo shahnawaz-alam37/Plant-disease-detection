@@ -42,9 +42,9 @@ const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
     const { theme, isDark } = useTheme();
 
     const tabConfig = [
-        { name: 'HomeTab', icon: 'home' as const, label: 'Home' },
-        { name: 'DetectTab', icon: 'camera' as const, label: 'Detect', isPrimary: true },
-        { name: 'AboutTab', icon: 'info' as const, label: 'About' },
+        { name: 'HomeTab', icon: 'home' as const },
+        { name: 'DetectTab', icon: 'camera' as const, isPrimary: true },
+        { name: 'AboutTab', icon: 'info' as const },
     ];
 
     return (
@@ -53,18 +53,19 @@ const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
                 styles.container,
                 {
                     paddingBottom: Math.max(insets.bottom, 8),
-                    backgroundColor: theme.colors.surface,
-                    borderTopColor: isDark ? theme.colors.border : 'transparent',
                 },
             ]}
         >
-            {/* Background shadow layer */}
+            {/* Navbar background with curved top and green border */}
             <View
                 style={[
-                    styles.shadowLayer,
+                    styles.navbarBg,
                     {
                         backgroundColor: theme.colors.surface,
-                        shadowColor: isDark ? '#000' : theme.colors.primary,
+                        borderTopLeftRadius: 28,
+                        borderTopRightRadius: 28,
+                        borderTopWidth: 3,
+                        borderTopColor: theme.colors.primary,
                     },
                 ]}
             />
@@ -113,27 +114,16 @@ const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
                                         styles.primaryButton,
                                         {
                                             backgroundColor: theme.colors.primary,
-                                            shadowColor: theme.colors.primary,
                                         },
                                     ]}
                                 >
-                                    <View style={styles.primaryIconContainer}>
-                                        <TabIcon
-                                            name={config?.icon || 'camera'}
-                                            focused={isFocused}
-                                            color={theme.colors.white}
-                                            size={28}
-                                        />
-                                    </View>
+                                    <TabIcon
+                                        name={config?.icon || 'camera'}
+                                        focused={isFocused}
+                                        color={theme.colors.white}
+                                        size={24}
+                                    />
                                 </View>
-                                <Text
-                                    style={[
-                                        styles.primaryLabel,
-                                        { color: theme.colors.primary },
-                                    ]}
-                                >
-                                    {config?.label || 'Detect'}
-                                </Text>
                             </TouchableOpacity>
                         );
                     }
@@ -150,14 +140,7 @@ const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
                             style={styles.tabButton}
                             activeOpacity={0.7}
                         >
-                            <View
-                                style={[
-                                    styles.tabIconContainer,
-                                    isFocused && {
-                                        backgroundColor: theme.colors.primary + '15',
-                                    },
-                                ]}
-                            >
+                            <View style={styles.tabIconContainer}>
                                 <TabIcon
                                     name={config?.icon || 'home'}
                                     focused={isFocused}
@@ -165,27 +148,6 @@ const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
                                     size={24}
                                 />
                             </View>
-                            <Text
-                                style={[
-                                    styles.tabLabel,
-                                    {
-                                        color: isFocused
-                                            ? theme.colors.primary
-                                            : theme.colors.textLight,
-                                        fontWeight: isFocused ? '600' : '500',
-                                    },
-                                ]}
-                            >
-                                {config?.label || route.name}
-                            </Text>
-                            {isFocused && (
-                                <View
-                                    style={[
-                                        styles.activeIndicator,
-                                        { backgroundColor: theme.colors.primary },
-                                    ]}
-                                />
-                            )}
                         </TouchableOpacity>
                     );
                 })}
@@ -201,84 +163,56 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         zIndex: 999,
-        elevation: 20,
-        borderTopWidth: Platform.OS === 'android' ? 0 : StyleSheet.hairlineWidth,
     },
-    shadowLayer: {
+    navbarBg: {
         position: 'absolute',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        shadowOffset: { width: 0, height: -4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 12,
-        elevation: 16,
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
     },
     tabsContainer: {
         flexDirection: 'row',
-        alignItems: 'flex-end',
+        alignItems: 'center',
         justifyContent: 'space-around',
-        paddingHorizontal: 16,
+        paddingHorizontal: 20,
         paddingTop: 8,
+        paddingBottom: 4,
     },
     tabButton: {
         flex: 1,
         alignItems: 'center',
-        paddingVertical: 8,
-        minWidth: 64,
+        justifyContent: 'center',
+        paddingVertical: 4,
     },
     tabIconContainer: {
-        width: 48,
-        height: 48,
-        borderRadius: 16,
+        width: 40,
+        height: 40,
+        borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 4,
-    },
-    tabLabel: {
-        fontSize: 12,
-        marginTop: 2,
-        textAlign: 'center',
-    },
-    activeIndicator: {
-        position: 'absolute',
-        top: 0,
-        width: 24,
-        height: 3,
-        borderRadius: 1.5,
     },
     primaryButtonContainer: {
         alignItems: 'center',
-        marginTop: -28,
-        paddingHorizontal: 8,
-    },
-    primaryButton: {
-        width: 64,
-        height: 64,
-        borderRadius: 32,
         justifyContent: 'center',
-        alignItems: 'center',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.35,
-        shadowRadius: 8,
-        elevation: 8,
-    },
-    primaryIconContainer: {
         width: 56,
         height: 56,
-        borderRadius: 28,
+    },
+    primaryButton: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.15)',
     },
-    primaryLabel: {
-        fontSize: 12,
-        fontWeight: '700',
-        marginTop: 6,
-        textAlign: 'center',
+    primaryIconContainer: {
+        width: 42,
+        height: 42,
+        borderRadius: 21,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
 

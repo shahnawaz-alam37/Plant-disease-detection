@@ -224,13 +224,7 @@ export default function CaptureScreen() {
                         ]}
                     />
 
-                    {/* Grid overlay */}
-                    <View style={styles.gridOverlay}>
-                        <View style={styles.gridColumn} />
-                        <View style={styles.gridColumn} />
-                        <View style={styles.gridRow} />
-                        <View style={styles.gridRow} />
-                    </View>
+                    
 
                     {/* Tips text */}
                     <View style={styles.tipsContainer}>
@@ -262,21 +256,15 @@ export default function CaptureScreen() {
                         <ActivityIndicator size="large" color={theme.colors.primary} />
                         <Text style={styles.loadingText}>Analyzing image...</Text>
                     </View>
-                ) : (
-                    <>
-                        <TouchableOpacity
-                            style={[styles.analyzeButton, !imageUri && styles.disabledButton]}
-                            onPress={analyzeImage}
-                            disabled={!imageUri}
-                        >
-                            <Ionicons name="search-outline" size={20} color="white" style={{ marginRight: 8 }} />
-                            <Text style={styles.analyzeText}>DETECT DISEASE</Text>
-                        </TouchableOpacity>
-                        {!imageUri && (
-                            <Text style={styles.footerHint}>Take or upload a photo to begin</Text>
-                        )}
-                    </>
-                )}
+                ) : imageUri ? (
+                    <TouchableOpacity
+                        style={styles.analyzeButton}
+                        onPress={analyzeImage}
+                    >
+                        <Ionicons name="search-outline" size={20} color="white" style={{ marginRight: 8 }} />
+                        <Text style={styles.analyzeText}>DETECT DISEASE</Text>
+                    </TouchableOpacity>
+                ) : null}
             </View>
         </View>
     );

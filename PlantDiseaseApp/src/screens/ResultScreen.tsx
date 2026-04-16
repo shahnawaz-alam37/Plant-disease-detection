@@ -38,14 +38,6 @@ export default function ResultScreen() {
     const isHealthy = prediction.class?.toLowerCase().includes('healthy');
     const diseaseSeverity = confidencePercentage > 80 ? 'High' : confidencePercentage > 50 ? 'Medium' : 'Low';
     
-    // Quality score
-    const qualityScore = prediction.quality?.score ?? null;
-    const qualityIssues = prediction.quality?.issues || [];
-    const qualitySuggestions = prediction.quality?.suggestions || [];
-    
-    // Top predictions
-    const topPredictions = prediction.topPredictions || [];
-    
     console.log("Confidence calculation:", { raw: prediction.confidence, percentage: confidencePercentage });
 
     const getConfidenceColor = (pct: number) => {
@@ -66,6 +58,11 @@ export default function ResultScreen() {
         if (score >= 40) return 'Fair';
         return 'Poor';
     };
+
+    const qualityScore = prediction.quality?.score ?? null;
+    const qualityIssues = prediction.quality?.issues || [];
+    const qualitySuggestions = prediction.quality?.suggestions || [];
+    const topPredictions = prediction.topPredictions || [];
 
     const generatePDF = async () => {
         try {
@@ -93,7 +90,6 @@ export default function ResultScreen() {
             });
 
             const confColor = getConfidenceColor(confidencePercentage);
-            const qualColor = qualityScore !== null ? getQualityColor(qualityScore) : '#888';
 
             const html = `
                 <!DOCTYPE html>
@@ -420,10 +416,10 @@ export default function ResultScreen() {
                                 ${qualityScore !== null ? `
                                 <div class="metric-card">
                                     <div class="metric-label">Image Quality</div>
-                                    <div class="metric-value" style="color: ${qualColor}">${qualityScore}%</div>
+                                    <div class="metric-value" style="color: ${getQualityColor(qualityScore)}">${qualityScore}%</div>
                                     <div class="metric-sublabel">${getQualityLabel(qualityScore)}</div>
                                     <div class="progress-bar">
-                                        <div class="progress-fill" style="width: ${qualityScore}%; background: ${qualColor}"></div>
+                                        <div class="progress-fill" style="width: ${qualityScore}%; background: ${getQualityColor(qualityScore)}"></div>
                                     </div>
                                 </div>
                                 ` : ''}
@@ -560,76 +556,9 @@ export default function ResultScreen() {
                     </View>
                 </View>
 
-                {/* Image Quality Score */}
-                {qualityScore !== null && (
-                    <View style={[styles.qualityCard]}>
-                        <Text style={styles.label}>IMAGE QUALITY</Text>
-                        <View style={styles.progressBarBg}>
-                            <View 
-                                style={[
-                                    styles.progressBarFill, 
-                                    { 
-                                        width: `${qualityScore}%`,
-                                        backgroundColor: getQualityColor(qualityScore)
-                                    }
-                                ]} 
-                            />
-                        </View>
-                        <View style={styles.confidenceRow}>
-                            <Text style={[styles.confidenceText, { color: getQualityColor(qualityScore) }]}>
-                                {qualityScore}%
-                            </Text>
-                            <Text style={[styles.severityText, { color: getQualityColor(qualityScore) }]}>
-                                {getQualityLabel(qualityScore)}
-                            </Text>
-                        </View>
-                        {qualityIssues.length > 0 && (
-                            <View style={styles.qualityIssuesContainer}>
-                                {qualityIssues.map((issue: string, i: number) => (
-                                    <Text key={i} style={styles.qualityIssueText}>{issue}</Text>
-                                ))}
-                            </View>
-                        )}
-                        {qualitySuggestions.length > 0 && (
-                            <View style={styles.qualitySuggestionsContainer}>
-                                {qualitySuggestions.map((s: string, i: number) => (
-                                    <Text key={i} style={styles.qualitySuggestionText}>{s}</Text>
-                                ))}
-                            </View>
-                        )}
-                    </View>
-                )}
+                
 
-                {/* Top Predictions */}
-                {topPredictions.length > 1 && (
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Top Predictions</Text>
-                        {topPredictions.map((p: any, i: number) => (
-                            <View key={i} style={[styles.topPredictionItem, i === 0 && styles.topPredictionFirst]}>
-                                <View style={styles.topPredictionRank}>
-                                    <Text style={styles.topPredictionRankText}>{i + 1}</Text>
-                                </View>
-                                <View style={styles.topPredictionInfo}>
-                                    <Text style={[styles.topPredictionName, i === 0 && styles.topPredictionNameBold]}>
-                                        {p.class}
-                                    </Text>
-                                    <View style={styles.topPredictionBarBg}>
-                                        <View style={[
-                                            styles.topPredictionBarFill,
-                                            { 
-                                                width: `${Math.min(p.confidence, 100)}%`,
-                                                backgroundColor: i === 0 ? '#059669' : i === 1 ? '#F59E0B' : '#9CA3AF'
-                                            }
-                                        ]} />
-                                    </View>
-                                </View>
-                                <Text style={[styles.topPredictionConf, { color: i === 0 ? '#059669' : '#6B7280' }]}>
-                                    {typeof p.confidence === 'number' ? p.confidence.toFixed(1) : p.confidence}%
-                                </Text>
-                            </View>
-                        ))}
-                    </View>
-                )}
+                
 
                 {/* Symptoms */}
                 {prediction.symptoms && prediction.symptoms.length > 0 && (

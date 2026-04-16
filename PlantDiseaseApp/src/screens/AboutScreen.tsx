@@ -201,17 +201,17 @@ export default function AboutScreen() {
                     </View>
                 </View>
 
-                <View style={[styles.practiceCard, { backgroundColor: theme.colors.surface }]}>
-                    <Ionicons name="wifi-outline" size={28} color={theme.colors.primary} style={{ marginRight: 16 }} />
-                    <View style={styles.practiceContent}>
-                        <Text style={[styles.practiceTitle, { color: theme.colors.text }]}>
-                            Active Internet Required
-                        </Text>
-                        <Text style={[styles.practiceDesc, { color: theme.colors.textSecondary }]}>
-                            AI analysis requires internet connection to our servers.
-                        </Text>
-                    </View>
-                </View>
+                    {/* <View style={[styles.practiceCard, { backgroundColor: theme.colors.surface }]}>
+                        <Ionicons name="wifi-outline" size={28} color={theme.colors.primary} style={{ marginRight: 16 }} />
+                        <View style={styles.practiceContent}>
+                            <Text style={[styles.practiceTitle, { color: theme.colors.text }]}>
+                                Active Internet Required
+                            </Text>
+                            <Text style={[styles.practiceDesc, { color: theme.colors.textSecondary }]}>
+                                AI analysis requires internet connection to our servers.
+                            </Text>
+                        </View>
+                    </View> */}
             </View>
 
             {/* FAQ Section */}

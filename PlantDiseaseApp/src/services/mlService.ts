@@ -15,12 +15,12 @@ type InferenceMode = 'offline' | 'online' | 'auto';
 let INFERENCE_MODE: InferenceMode = 'online'; // Default to online for best accuracy with enhanced server
 
 // SERVER CONFIGURATION (used when INFERENCE_MODE is 'online' or 'auto' fails offline)
-let SERVER_URL = "http://192.168.1.7:5000/predict";  // Current PC LAN IP
+let SERVER_URL = "http://192.168.0.119:5000/predict";  // Current PC LAN IP
 
 // Fallback URLs to try in order
 const FALLBACK_URLS = [
-    "http://192.168.1.7:5000/predict",
-    "http://10.0.2.2:5000/predict",  // Android emulator
+    "http://192.168.0.119:5000/predict",
+    "http://192.168.0.119:5000/predict",  // Android emulator
     "http://localhost:5000/predict",
     "http://127.0.0.1:5000/predict",
 ];

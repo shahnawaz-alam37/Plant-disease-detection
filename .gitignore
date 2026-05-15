@@ -6,7 +6,8 @@ venv/
 ENV/
 .env*
 !.env.example
-
+*.keras
+*.pth
 # Expo / React Native
 .expo/
 PlantDiseaseApp/.expo/

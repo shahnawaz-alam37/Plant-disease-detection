@@ -4,7 +4,7 @@
 
 [![Status](https://img.shields.io/badge/status-production%20ready-brightgreen)]()
 [![Version](https://img.shields.io/badge/version-1.0.0-blue)]()
-[![License](https://img.shields.io/badge/license-MIT-green)]()
+[![arXiv](https://img.shields.io/badge/arXiv-2601.02353-b31b1b.svg)](https://doi.org/10.48550/arXiv.2601.02353)
 
 ## ✨ Features
 

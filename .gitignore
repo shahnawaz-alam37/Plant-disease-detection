@@ -43,14 +43,14 @@ wheels/
 *.egg
 
 # ML Models & Large Files
-*.keras
+# *.keras
 *.h5
 *.tflite
 *.pb
 *.onnx
 *.weights
 *.pt
-*.pth
+# *.pth
 # plant_disease_model_plantvillage.keras
 
 # Logs & Data

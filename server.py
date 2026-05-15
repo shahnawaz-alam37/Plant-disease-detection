@@ -1,11 +1,9 @@
 """
-Plant Disease Detection Server - OFFLINE VERSION (ENHANCED)
-Uses locally trained TensorFlow model with advanced preprocessing
-Includes image quality validation and confidence calibration
+Plant Disease Detection Server
+Uses leaf/not-leaf gate (Keras) + disease classifier (PyTorch) pipeline
 """
 
-import flask
-from flask import request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import numpy as np
 import os
@@ -17,13 +15,209 @@ import cv2
 import warnings
 warnings.filterwarnings('ignore')
 
-app = flask.Flask(__name__)
+app = Flask(__name__)
 CORS(app)
 
-# Configuration
-MODEL_PATH = "plant_disease_model_plantvillage.keras"
-CLASS_NAMES_PATH = "class_names_plantvillage.json"
-IMAGE_SIZE = (224, 224)
+# ============================================================================
+# NEW PIPELINE: Leaf/Not-Leaf Gate + Disease Classification
+# ============================================================================
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torchvision import transforms, models
+
+# Leaf gate model paths (keras)
+LEAF_MODEL_PATHS = [
+    os.environ.get('LEAF_MODEL_PATH', 'leaf_vs_notleaf_v2.keras'),
+    'checkpoints/leaf_vs_notleaf_v2.keras',
+    'checkpoints/leaf_notleaf_v2.keras',
+    'checkpoints/leaf_vs_notleaf_model.keras',
+]
+
+# Leaf gate settings
+LEAF_THRESHOLD = float(os.environ.get('LEAF_THRESHOLD', '0.5'))
+LEAF_SCALAR_MODE = os.environ.get('LEAF_SCALAR_MODE', 'not_leaf').strip().lower()
+LEAF_NOT_LEAF_INDEX = int(os.environ.get('LEAF_NOT_LEAF_INDEX', '1'))
+LEAF_FAIL_CLOSED = os.environ.get('LEAF_FAIL_CLOSED', '1') == '1'
+
+# Disease classes (41 classes from leafguard_final.pth)
+TARGET_CLASSES = [
+    'Apple___Apple_scab', 'Apple___Black_rot', 'Apple___Cedar_apple_rust', 'Apple___healthy',
+    'Cherry_(including_sour)___Powdery_mildew', 'Cherry_(including_sour)___healthy',
+    'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot', 'Corn_(maize)___Common_rust_',
+    'Corn_(maize)___Northern_Leaf_Blight', 'Corn_(maize)___healthy',
+    'Grape___Black_rot', 'Grape___Esca_(Black_Measles)', 'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)',
+    'Grape___healthy', 'Pepper,_bell___Bacterial_spot', 'Pepper,_bell___healthy',
+    'Potato___Early_blight', 'Potato___Late_blight', 'Potato___healthy',
+    'Strawberry___Leaf_scorch', 'Strawberry___healthy',
+    'Tomato___Bacterial_spot', 'Tomato___Early_blight', 'Tomato___Late_blight',
+    'Tomato___Leaf_Mold', 'Tomato___Septoria_leaf_spot', 'Tomato___Spider_mites Two-spotted_spider_mite',
+    'Tomato___Target_Spot', 'Tomato___Tomato_Yellow_Leaf_Curl_Virus', 'Tomato___Tomato_mosaic_virus',
+    'Tomato___healthy',
+    'Tomato_Blight', 'Tomato_Blotch', 'Tomato_Canker', 'Tomato_Leaf_Mold',
+    'Tomato_Mildew', 'Tomato_Mosaic', 'Tomato_Rot', 'Tomato_Rust', 'Tomato_Smut', 'Tomato_Spot',
+]
+
+# Model globals
+LEAF_MODEL = None
+DISEASE_MODEL = None
+device = None
+pytorch_transform = None
+
+
+def _softmax_np(x: np.ndarray) -> np.ndarray:
+    x = x.astype(np.float64)
+    x = x - np.max(x)
+    e = np.exp(x)
+    s = np.sum(e)
+    if s <= 0:
+        return np.ones_like(e) / float(len(e))
+    return e / s
+
+
+def _extract_not_leaf_probability(raw_pred) -> float:
+    """Convert different Keras output formats into a single not-leaf probability in [0, 1]."""
+    arr = np.asarray(raw_pred).squeeze()
+    
+    if arr.ndim == 0:
+        val = float(arr)
+        val = max(0.0, min(1.0, val))
+        if LEAF_SCALAR_MODE == 'leaf':
+            return 1.0 - val
+        return val
+    
+    if arr.ndim == 1:
+        probs = arr.astype(np.float64)
+        if np.any(probs < 0.0) or np.any(probs > 1.0) or abs(float(np.sum(probs)) - 1.0) > 1e-3:
+            probs = _softmax_np(probs)
+        
+        idx = LEAF_NOT_LEAF_INDEX
+        if idx < 0 or idx >= len(probs):
+            idx = min(1, len(probs) - 1)
+        return float(max(0.0, min(1.0, probs[idx])))
+    
+    raise ValueError(f"Unsupported leaf model output shape: {arr.shape}")
+
+
+def run_leaf_gate(pil_image):
+    """Run leaf/non-leaf gate. Returns (passed, not_leaf_prob, reason)."""
+    if LEAF_MODEL is None:
+        if LEAF_FAIL_CLOSED:
+            return False, None, 'leaf_model_unavailable'
+        return True, None, 'leaf_model_unavailable_but_allowed'
+    
+    keras_img = pil_image.resize((224, 224))
+    keras_array = np.array(keras_img, dtype=np.float32) / 255.0
+    keras_array = keras_array.reshape(1, 224, 224, 3)
+    
+    leaf_pred = LEAF_MODEL.predict(keras_array, verbose=0)
+    not_leaf_prob = _extract_not_leaf_probability(leaf_pred)
+    is_leaf = not_leaf_prob < LEAF_THRESHOLD
+    
+    print(f"Leaf gate => not_leaf_prob={not_leaf_prob:.3f}, threshold={LEAF_THRESHOLD:.3f}, is_leaf={is_leaf}")
+    
+    if not is_leaf:
+        return False, not_leaf_prob, 'not_leaf_detected'
+    return True, not_leaf_prob, 'leaf_detected'
+
+
+def build_not_leaf_response(not_leaf_prob=None, reason='not_leaf_detected'):
+    """Consistent response payload for non-leaf outcomes."""
+    response = {
+        'is_leaf': False,
+        'prediction': 'not_leaf',
+        'class': 'not_leaf',
+        'message': 'not leaf',
+        'reason': reason,
+    }
+    if not_leaf_prob is not None:
+        response['confidence'] = float(not_leaf_prob)
+        response['not_leaf_probability'] = float(not_leaf_prob)
+    else:
+        response['confidence'] = None
+        response['not_leaf_probability'] = None
+    return response
+
+
+def load_leaf_model():
+    """Load the Keras leaf/not-leaf model."""
+    global LEAF_MODEL
+    
+    _leaf_load_errors = []
+    for model_path in LEAF_MODEL_PATHS:
+        try:
+            if os.path.exists(model_path):
+                LEAF_MODEL = tf.keras.models.load_model(model_path)
+                LEAF_MODEL.compile()
+                print(f"Leaf/Not-Leaf model loaded: {model_path}")
+                return
+            _leaf_load_errors.append(f"Not found: {model_path}")
+        except Exception as e:
+            _leaf_load_errors.append(f"{model_path} -> {e}")
+    
+    print("Warning: Could not load leaf model:")
+    for err in _leaf_load_errors:
+        print(f"  - {err}")
+    LEAF_MODEL = None
+
+
+def load_disease_model():
+    """Load the PyTorch disease classification model."""
+    global DISEASE_MODEL, device, pytorch_transform
+    
+    try:
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        print(f"Device: {device}")
+        
+        pytorch_transform = transforms.Compose([
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        ])
+        
+        # Try multiple possible paths
+        model_paths = [
+            os.environ.get('DISEASE_MODEL_PATH', 'leafguard_final.pth'),
+            'checkpoints/leafguard_final.pth',
+        ]
+        ckpt = None
+        loaded_path = None
+        
+        for path in model_paths:
+            if os.path.exists(path):
+                ckpt = torch.load(path, map_location=device, weights_only=False)
+                loaded_path = path
+                break
+        
+        if ckpt is None:
+            print("Warning: Disease model not found")
+            return
+        
+        DISEASE_MODEL = models.resnet18(weights=None)
+        DISEASE_MODEL.fc = nn.Linear(512, 41)
+        DISEASE_MODEL.load_state_dict(ckpt['model_state_dict'], strict=True)
+        DISEASE_MODEL = DISEASE_MODEL.to(device)
+        DISEASE_MODEL.eval()
+        print(f"Disease model loaded from: {loaded_path}")
+        
+    except Exception as e:
+        print(f"Error loading disease model: {e}")
+        DISEASE_MODEL = None
+
+
+# Load models on startup
+print("Loading models...")
+load_leaf_model()
+load_disease_model()
+
+print("=" * 80)
+print("Plant Disease Detection Server - NEW PIPELINE")
+print("=" * 80)
+print(f"Leaf/Not-Leaf model: {'Loaded' if LEAF_MODEL else 'Not loaded'}")
+print(f"Disease model: {'Loaded' if DISEASE_MODEL else 'Not loaded'}")
+print(f"Classes: {len(TARGET_CLASSES)}")
+print("=" * 80)
 
 # Image quality - ideal ranges for graduated scoring
 # Brightness: ideal range 100-170 on 0-255 scale
@@ -195,45 +389,42 @@ DISEASE_INFO = {
     }
 }
 
+# ============================================================================
+# IMAGE QUALITY VALIDATION (Optional - for backward compatibility)
+# ============================================================================
+
 # Load model and class names at startup
-print("=" * 80)
-print("🌿 PLANT DISEASE DETECTION SERVER - ENHANCED OFFLINE MODE")
-print("=" * 80)
+# model = None
+# class_names = []
 
-model = None
-class_names = []
+# def load_model():
+#     global model, class_names
+#     
+#     print("\n📦 Loading TensorFlow model...")
+#     
+#     if not os.path.exists(MODEL_PATH):
+#         raise FileNotFoundError(f"Model not found: {MODEL_PATH}")
+#     
+#     model = tf.keras.models.load_model(MODEL_PATH)
+#     print(f"✅ Model loaded: {MODEL_PATH}")
+#     
+#     # Load class names
+#     if os.path.exists(CLASS_NAMES_PATH):
+#         with open(CLASS_NAMES_PATH, 'r') as f:
+#             class_names = json.load(f)
+#     elif os.path.exists('class_names.txt'):
+#         with open('class_names.txt', 'r') as f:
+#             class_names = [line.strip() for line in f if line.strip()]
+#     else:
+#         raise FileNotFoundError("Class names file not found")
+#     
+#     print(f"✅ Loaded {len(class_names)} disease classes")
+#     print("\n🚀 Server ready for enhanced offline inference!")
+#     print("=" * 80)
 
-def load_model():
-    global model, class_names
-    
-    print("\n📦 Loading TensorFlow model...")
-    
-    if not os.path.exists(MODEL_PATH):
-        raise FileNotFoundError(f"Model not found: {MODEL_PATH}")
-    
-    model = tf.keras.models.load_model(MODEL_PATH)
-    print(f"✅ Model loaded: {MODEL_PATH}")
-    
-    # Load class names
-    if os.path.exists(CLASS_NAMES_PATH):
-        with open(CLASS_NAMES_PATH, 'r') as f:
-            class_names = json.load(f)
-    elif os.path.exists('class_names.txt'):
-        with open('class_names.txt', 'r') as f:
-            class_names = [line.strip() for line in f if line.strip()]
-    else:
-        raise FileNotFoundError("Class names file not found")
-    
-    print(f"✅ Loaded {len(class_names)} disease classes")
-    print("\n🚀 Server ready for enhanced offline inference!")
-    print("=" * 80)
+# # Load model on startup
+# load_model()
 
-# Load model on startup
-load_model()
-
-# ============================================================================
-# IMAGE QUALITY VALIDATION
-# ============================================================================
 
 def calculate_brightness(image):
     """Calculate average brightness of image (0-255)."""
@@ -577,138 +768,110 @@ def format_class_name(class_name):
         return f"{plant} - {disease}"
     return class_name.replace('_', ' ').title()
 
+
+def _classify_from_bytes(image_bytes):
+    try:
+        pil_image = Image.open(BytesIO(image_bytes)).convert('RGB')
+
+        # Step 1: Leaf gate (required before disease classification)
+        leaf_passed, not_leaf_prob, leaf_reason = run_leaf_gate(pil_image)
+        if not leaf_passed:
+            return build_not_leaf_response(not_leaf_prob=not_leaf_prob, reason=leaf_reason), 200
+
+        # Step 2: Disease classification (only if leaf was detected)
+        if DISEASE_MODEL is not None and pytorch_transform is not None:
+            img_tensor = pytorch_transform(pil_image).unsqueeze(0).to(device)
+
+            with torch.no_grad():
+                logits = DISEASE_MODEL(img_tensor)
+                probs = F.softmax(logits, dim=1)
+
+                top_probs, top_preds = probs.topk(5, dim=1)
+                top_probs = top_probs.squeeze().cpu().numpy()
+                top_preds = top_preds.squeeze().cpu().numpy()
+
+            results = []
+            for prob, idx in zip(top_probs, top_preds):
+                results.append({
+                    'class': TARGET_CLASSES[idx],
+                    'confidence': float(prob)
+                })
+
+            main_result = results[0]
+            disease_info = get_disease_info(main_result['class'])
+
+            return {
+                'is_leaf': True,
+                'not_leaf_probability': float(not_leaf_prob) if not_leaf_prob is not None else None,
+                'prediction': main_result['class'],
+                'class': main_result['class'],
+                'confidence': main_result['confidence'],
+                'predictions': results,
+                'top_predictions': results,
+                'symptoms': disease_info.get('symptoms', []),
+                'prevention': disease_info.get('prevention', [])
+            }, 200
+
+        return {
+            'is_leaf': True if LEAF_MODEL else None,
+            'prediction': 'model_unavailable',
+            'class': 'model_unavailable',
+            'message': 'Disease classification model not loaded'
+        }, 200
+
+    except Exception as e:
+        print(f"Error: {e}")
+        import traceback
+        traceback.print_exc()
+        return {'error': str(e)}, 500
+
+
+def _classify_request():
+    if 'image' not in request.files:
+        return jsonify({'error': 'No image provided'}), 400
+
+    file = request.files['image']
+    image_bytes = file.read()
+
+    payload, status_code = _classify_from_bytes(image_bytes)
+    return jsonify(payload), status_code
+
+
+@app.route('/', methods=['GET'])
+def index():
+    """Serve the HTML UI when available."""
+    try:
+        return render_template('index.html')
+    except Exception:
+        return jsonify({'status': 'ok'}), 200
+
 @app.route('/health', methods=['GET'])
 def health():
     """Health check endpoint"""
     return jsonify({
-        'status': 'healthy',
-        'service': 'Plant Disease Detection API (Enhanced)',
-        'version': '3.0 - ENHANCED OFFLINE',
-        'model_loaded': model is not None,
-        'num_classes': len(class_names),
-        'mode': 'offline',
-        'features': ['quality_validation', 'lighting_normalization', 'TTA', 'confidence_calibration']
+        'status': 'ok',
+        'leaf_model_loaded': LEAF_MODEL is not None,
+        'disease_model_loaded': DISEASE_MODEL is not None,
+        'classes': len(TARGET_CLASSES),
+        'leaf_model_paths': LEAF_MODEL_PATHS,
+        'leaf_threshold': LEAF_THRESHOLD,
+        'leaf_scalar_mode': LEAF_SCALAR_MODE,
+        'leaf_not_leaf_index': LEAF_NOT_LEAF_INDEX,
+        'leaf_fail_closed': LEAF_FAIL_CLOSED,
     }), 200
 
-@app.route('/predict', methods=['POST'])
+
+@app.route('/classify', methods=['POST'])
+def classify():
+    """Two-step classification: leaf check then disease classification."""
+    return _classify_request()
+
+@app.route('/predict', methods=['POST', 'HEAD'])
 def predict():
-    """
-    Enhanced prediction endpoint with:
-    - Image quality validation
-    - Advanced preprocessing (lighting normalization, enhancement)
-    - Test-Time Augmentation (TTA) for robustness
-    - Confidence calibration
-    """
-    if 'image' not in request.files:
-        return jsonify({'error': 'No image uploaded'}), 400
-    
-    file = request.files['image']
-    
-    # Check for TTA mode (optional query param)
-    use_tta = request.args.get('tta', 'false').lower() == 'true'
-    skip_validation = request.args.get('skip_validation', 'false').lower() == 'true'
-    
-    try:
-        # Validate file
-        if not file.filename:
-            return jsonify({'error': 'Empty file'}), 400
-        
-        # Read image data
-        image_data = file.read()
-        if len(image_data) == 0:
-            return jsonify({'error': 'Empty image file'}), 400
-        
-        print(f"\n📷 Received image: {file.filename} ({len(image_data)} bytes)")
-        
-        # Open image for validation
-        image = Image.open(BytesIO(image_data))
-        if image.mode != 'RGB':
-            image = image.convert('RGB')
-        
-        # Validate image quality (unless skipped)
-        quality_score = 100
-        quality_issues = []
-        quality_suggestions = []
-        
-        if not skip_validation:
-            is_valid, quality_score, quality_issues, quality_suggestions = validate_image_quality(image)
-            print(f"📊 Image quality score: {quality_score}%")
-            
-            if quality_issues:
-                print(f"⚠️ Quality issues: {', '.join(quality_issues)}")
-            
-            # Warn but don't block on low quality
-            if not is_valid:
-                print("⚠️ Low quality image - results may be unreliable")
-        
-        # Perform prediction (with TTA if enabled)
-        if use_tta:
-            print("🔄 Using Test-Time Augmentation...")
-            predictions = get_multi_crop_predictions(image_data)
-        else:
-            processed_image = preprocess_image(image_data, apply_enhancements=True)
-            predictions = model.predict(processed_image, verbose=0)[0]
-        
-        # Get top predictions (top 3)
-        top_indices = np.argsort(predictions)[-3:][::-1]
-        top_predictions = []
-        
-        for idx in top_indices:
-            top_predictions.append({
-                'class': format_class_name(class_names[idx]),
-                'raw_class': class_names[idx],
-                'confidence': round(float(predictions[idx]) * 100, 2)
-            })
-        
-        # Primary prediction
-        predicted_class_idx = top_indices[0]
-        raw_confidence = float(predictions[predicted_class_idx]) * 100
-        
-        # Calculate prediction entropy for calibration
-        entropy = calculate_entropy(predictions)
-        
-        # Calibrate confidence based on quality and certainty
-        calibrated_confidence = calibrate_confidence(raw_confidence, entropy, quality_score)
-        
-        # Get class name and info
-        predicted_class = class_names[predicted_class_idx]
-        disease_info = get_disease_info(predicted_class)
-        display_name = format_class_name(predicted_class)
-        
-        # Determine if healthy
-        is_healthy = 'healthy' in predicted_class.lower()
-        
-        # Build enhanced response
-        result = {
-            'class': display_name,
-            'confidence': round(calibrated_confidence, 2),
-            'raw_confidence': round(raw_confidence, 2),
-            'symptoms': disease_info['symptoms'],
-            'prevention': disease_info['prevention'],
-            'raw_class': predicted_class,
-            'is_healthy': is_healthy,
-            'top_predictions': top_predictions,
-            'quality': {
-                'score': quality_score,
-                'issues': quality_issues,
-                'suggestions': quality_suggestions
-            },
-            'prediction_entropy': round(entropy, 4),
-            'tta_enabled': use_tta
-        }
-        
-        print(f"✅ Prediction: {display_name}")
-        print(f"   Raw confidence: {raw_confidence:.2f}%")
-        print(f"   Calibrated confidence: {calibrated_confidence:.2f}%")
-        print(f"   Quality score: {quality_score}%")
-        
-        return jsonify(result), 200
-        
-    except Exception as e:
-        print(f"❌ Error: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        return jsonify({'error': f'Prediction error: {str(e)}'}), 500
+    """Backward-compatible endpoint for the mobile app."""
+    if request.method == 'HEAD':
+        return '', 200
+    return _classify_request()
 
 @app.route('/validate', methods=['POST'])
 def validate_image():
@@ -747,29 +910,20 @@ def validate_image():
 @app.route('/classes', methods=['GET'])
 def get_classes():
     """Return list of all supported disease classes."""
-    formatted_classes = [format_class_name(c) for c in class_names]
     return jsonify({
-        'classes': formatted_classes,
-        'raw_classes': class_names,
-        'count': len(class_names)
+        'classes': TARGET_CLASSES,
+        'count': len(TARGET_CLASSES)
     }), 200
+
 
 if __name__ == '__main__':
     print("\n" + "=" * 80)
-    print("🌿 ENHANCED Plant Disease Detection Server v3.0")
+    print("Plant Disease Detection Server - Leaf Gate Pipeline")
     print("=" * 80)
-    print(f"📂 Model: {MODEL_PATH}")
-    print(f"📋 Classes: {len(class_names)} disease types")
-    print(f"🌐 Server: http://0.0.0.0:5000")
+    print(f"Leaf model: {'Loaded' if LEAF_MODEL else 'Not loaded'}")
+    print(f"Disease model: {'Loaded' if DISEASE_MODEL else 'Not loaded'}")
+    print(f"Classes: {len(TARGET_CLASSES)}")
+    print(f"Server: http://0.0.0.0:5000")
     print("=" * 80)
-    print("\n🔬 ENHANCED FEATURES:")
-    print("   ✓ Image quality validation (blur, lighting, contrast)")
-    print("   ✓ CLAHE lighting normalization")
-    print("   ✓ Test-Time Augmentation (TTA) for robustness")
-    print("   ✓ Confidence calibration")
-    print("   ✓ Top-3 predictions")
-    print("   ✓ Smart crop and resize")
-    print("\n💡 NO INTERNET REQUIRED - All inference runs locally!")
-    print("=" * 80 + "\n")
     
     app.run(host='0.0.0.0', port=5000, debug=False)

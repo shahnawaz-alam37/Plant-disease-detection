@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeafGuard - Plant Disease Classifier</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a5c1a 0%, #2d8a2d 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(90deg, #2d8a2d, #1a5c1a);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+        .header p {
+            opacity: 0.9;
+        }
+        .content {
+            padding: 30px;
+        }
+        .upload-section {
+            border: 3px dashed #ccc;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-section:hover {
+            border-color: #2d8a2d;
+            background: #f0f8f0;
+        }
+        .upload-section.dragover {
+            background: #e8f5e8;
+            border-color: #2d8a2d;
+        }
+        .upload-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        .btn {
+            background: linear-gradient(90deg, #2d8a2d, #1a5c1a);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(45, 138, 45, 0.4);
+        }
+        .result-section {
+            margin-top: 30px;
+            display: none;
+        }
+        .result-section.show {
+            display: block;
+        }
+        .image-preview {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .image-preview img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .main-result {
+            background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .main-result h2 {
+            color: #1a5c1a;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+        .confidence {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2d8a2d;
+        }
+        .progress-bar {
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2d8a2d, #1a5c1a);
+            transition: width 0.5s;
+        }
+        .top-predictions {
+            margin-top: 20px;
+        }
+        .prediction-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: #f8f8f8;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .prediction-rank {
+            font-weight: bold;
+            color: #666;
+            width: 30px;
+        }
+        .prediction-class {
+            flex: 1;
+            font-weight: 500;
+        }
+        .prediction-confidence {
+            font-weight: bold;
+            color: #2d8a2d;
+        }
+        .status {
+            padding: 15px 25px;
+            border-radius: 30px;
+            text-align: center;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .status.healthy {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.disease {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status.notleaf {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+        .loading.show {
+            display: block;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2d8a2d;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .info {
+            background: #f8f8f8;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+        .info h3 {
+            color: #1a5c1a;
+            margin-bottom: 10px;
+        }
+        .classes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .class-item {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌿 LeafGuard</h1>
+            <p>Plant Disease Classifier</p>
+        </div>
+        
+        <div class="content">
+            <div class="upload-section" id="dropZone">
+                <div class="upload-icon">📷</div>
+                <h3>Upload Plant Image</h3>
+                <p>Click to select or drag & drop image</p>
+                <input type="file" id="fileInput" accept="image/*" style="display: none;">
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" onclick="document.getElementById('fileInput').click()">
+                    Select Image
+                </button>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 15px;">Analyzing image...</p>
+            </div>
+            
+            <div class="result-section" id="result">
+                <div class="image-preview">
+                    <img id="preview" src="" alt="Preview">
+                </div>
+                
+                <div class="main-result" id="mainResult">
+                    <h2 id="diseaseName">-</h2>
+                    <div class="confidence" id="confidenceValue">-</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+                
+                <div class="status" id="healthStatus"></div>
+                
+                <div class="top-predictions" id="topPredictions">
+                    <h3 style="margin-bottom: 15px;">Top Predictions</h3>
+                    <div id="predictionsList"></div>
+                </div>
+            </div>
+            
+            <div class="info">
+                <h3>About LeafGuard</h3>
+                <p>Deep learning model for plant disease classification using ResNet18.</p>
+                
+                <h3 style="margin-top: 20px;">Supported Diseases</h3>
+                <div class="classes-grid">
+                    <div class="class-item">🍎 Apple Scab</div>
+                    <div class="class-item">🍎 Apple Black Rot</div>
+                    <div class="class-item">🍎 Apple Rust</div>
+                    <div class="class-item">🍎 Apple Healthy</div>
+                    <div class="class-item">🍒 Cherry Mildew</div>
+                    <div class="class-item">🌽 Corn Leaf Spot</div>
+                    <div class="class-item">🌽 Corn Rust</div>
+                    <div class="class-item">🍇 Grape Black Rot</div>
+                    <div class="class-item">🍇 Grape Esca</div>
+                    <div class="class-item">🫑 Pepper Spot</div>
+                    <div class="class-item">🥔 Potato Blight</div>
+                    <div class="class-item">🍓 Strawberry Scorch</div>
+                    <div class="class-item">🍅 Tomato Bacteria</div>
+                    <div class="class-item">🍅 Tomato Early Blight</div>
+                    <div class="class-item">🍅 Tomato Late Blight</div>
+                    <div class="class-item">🍅 Tomato Leaf Mold</div>
+                    <div class="class-item">🍅 Tomato YLCV</div>
+                    <div class="class-item">🍅 TomatoHealthy</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+        
+        // Handle click
+        dropZone.addEventListener('click', () => fileInput.click());
+        
+        // Handle drag & drop
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+        
+        // Handle file select
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleFile(e.target.files[0]);
+            }
+        });
+        
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file');
+                return;
+            }
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('preview').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            
+            // Show loading
+            loading.classList.add('show');
+            result.classList.remove('show');
+            
+            // Send to server (you need to run this with a backend)
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            fetch('/classify', {
+                method: 'POST',
+                body: formData
+            })
+            .then(async (response) => {
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) {
+                    const errorMessage = data.error || data.message || `Request failed (${response.status})`;
+                    throw new Error(errorMessage);
+                }
+                return data;
+            })
+            .then((data) => {
+                displayResult(data);
+            })
+            .catch(err => {
+                console.error(err);
+                loading.classList.remove('show');
+                alert(err.message || 'Error classifying image. Make sure the server is running.');
+            });
+        }
+        
+        function displayResult(data) {
+            loading.classList.remove('show');
+            result.classList.add('show');
+
+            const diseaseNameEl = document.getElementById('diseaseName');
+            const confidenceEl = document.getElementById('confidenceValue');
+            const progressFillEl = document.getElementById('progressFill');
+            const statusEl = document.getElementById('healthStatus');
+            const list = document.getElementById('predictionsList');
+            const topPredictionsEl = document.getElementById('topPredictions');
+
+            const predictions = Array.isArray(data.predictions) ? data.predictions : [];
+            const isNotLeaf = data.is_leaf === false || data.prediction === 'not_leaf';
+
+            if (isNotLeaf) {
+                const notLeafProb =
+                    typeof data.not_leaf_probability === 'number'
+                        ? data.not_leaf_probability
+                        : (typeof data.confidence === 'number' ? data.confidence : 0);
+
+                diseaseNameEl.textContent = 'Not a Leaf';
+                confidenceEl.textContent = (notLeafProb * 100).toFixed(1) + '%';
+                progressFillEl.style.width = (notLeafProb * 100) + '%';
+
+                statusEl.textContent = data.message || 'not leaf';
+                statusEl.className = 'status notleaf';
+
+                list.innerHTML = '';
+                topPredictionsEl.style.display = 'none';
+                return;
+            }
+
+            if (predictions.length === 0) {
+                diseaseNameEl.textContent = data.prediction || 'No Prediction';
+                confidenceEl.textContent = '-';
+                progressFillEl.style.width = '0%';
+
+                statusEl.textContent = data.message || 'No predictions available';
+                statusEl.className = 'status disease';
+
+                list.innerHTML = '';
+                topPredictionsEl.style.display = 'none';
+                return;
+            }
+
+            topPredictionsEl.style.display = 'block';
+            
+            // Main result
+            const mainResult = predictions[0];
+            diseaseNameEl.textContent = mainResult.class;
+            confidenceEl.textContent = 
+                (mainResult.confidence * 100).toFixed(1) + '%';
+            progressFillEl.style.width = 
+                (mainResult.confidence * 100) + '%';
+            
+            // Health status
+            const isHealthy = mainResult.class.toLowerCase().includes('healthy');
+            if (isHealthy) {
+                statusEl.textContent = '✓ This plant appears to be HEALTHY';
+                statusEl.className = 'status healthy';
+            } else {
+                statusEl.textContent = '⚠ This plant may have a DISEASE';
+                statusEl.className = 'status disease';
+            }
+            
+            // Top predictions
+            list.innerHTML = '';
+            predictions.forEach((pred, i) => {
+                list.innerHTML += `
+                    <div class="prediction-item">
+                        <span class="prediction-rank">${i + 1}.</span>
+                        <span class="prediction-class">${pred.class}</span>
+                        <span class="prediction-confidence">${(pred.confidence * 100).toFixed(1)}%</span>
+                    </div>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>

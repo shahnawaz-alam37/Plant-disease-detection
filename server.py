@@ -265,7 +265,7 @@ DISEASE_INFO = {
     },
     "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot": {
         "symptoms": ["Rectangular gray-tan lesions", "Lesions parallel to leaf veins", "Leaves may turn yellow and die", "Reduced yield potential"],
-        "prevention": ["Rotate crops yearly", "Plant resistant hybrids", "Apply foliar fungicides", "Remove crop residue after harvest"]
+        "prevention": ["Rotate kharif crops yearly", "Plant resistant hybrids", "Apply foliar fungicides", "Remove crop residue after harvest"]
     },
     "Corn_(maize)___Common_rust_": {
         "symptoms": ["Small reddish-brown pustules on leaves", "Pustules on both leaf surfaces", "Severe cases cause leaf death", "Reduced photosynthesis"],

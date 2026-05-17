@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LeafGuard - Plant Disease Classifier</title>
+    <title>Agronet - PMP DACIS</title>
     <style>
         * {
             margin: 0;
@@ -123,6 +123,22 @@
         .top-predictions {
             margin-top: 20px;
         }
+        .disease-prevention {
+            margin-top: 20px;
+            background: #f8f8f8;
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .disease-prevention h3 {
+            color: #1a5c1a;
+            margin-bottom: 10px;
+        }
+        .disease-prevention ul {
+            margin-left: 18px;
+        }
+        .disease-prevention li {
+            margin-bottom: 6px;
+        }
         .prediction-item {
             display: flex;
             align-items: center;
@@ -211,8 +227,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🌿 LeafGuard</h1>
-            <p>Plant Disease Classifier</p>
+            <h1>Agronet</h1>
+            <p>Plant Disease Detection</p>
         </div>
         
         <div class="content">
@@ -250,35 +266,42 @@
                 <div class="status" id="healthStatus"></div>
                 
                 <div class="top-predictions" id="topPredictions">
-                    <h3 style="margin-bottom: 15px;">Top Predictions</h3>
+                    <h3 style="margin-bottom: 15px;">Top Prediction</h3>
                     <div id="predictionsList"></div>
+                </div>
+
+                <div class="disease-prevention" id="preventionSection" style="display: none;">
+                    <h3>Symptoms</h3>
+                    <ul id="symptomsList"></ul>
+                    <h3 style="margin-top: 14px;">Prevention</h3>
+                    <ul id="preventionList"></ul>
                 </div>
             </div>
             
             <div class="info">
-                <h3>About LeafGuard</h3>
-                <p>Deep learning model for plant disease classification using ResNet18.</p>
+                <h3>About Agronet</h3>
+                <p>Deep learning model for plant disease classification</p>
                 
                 <h3 style="margin-top: 20px;">Supported Diseases</h3>
                 <div class="classes-grid">
-                    <div class="class-item">🍎 Apple Scab</div>
-                    <div class="class-item">🍎 Apple Black Rot</div>
-                    <div class="class-item">🍎 Apple Rust</div>
-                    <div class="class-item">🍎 Apple Healthy</div>
-                    <div class="class-item">🍒 Cherry Mildew</div>
-                    <div class="class-item">🌽 Corn Leaf Spot</div>
-                    <div class="class-item">🌽 Corn Rust</div>
-                    <div class="class-item">🍇 Grape Black Rot</div>
-                    <div class="class-item">🍇 Grape Esca</div>
-                    <div class="class-item">🫑 Pepper Spot</div>
-                    <div class="class-item">🥔 Potato Blight</div>
-                    <div class="class-item">🍓 Strawberry Scorch</div>
-                    <div class="class-item">🍅 Tomato Bacteria</div>
-                    <div class="class-item">🍅 Tomato Early Blight</div>
-                    <div class="class-item">🍅 Tomato Late Blight</div>
-                    <div class="class-item">🍅 Tomato Leaf Mold</div>
-                    <div class="class-item">🍅 Tomato YLCV</div>
-                    <div class="class-item">🍅 TomatoHealthy</div>
+                    <div class="class-item">Apple Scab</div>
+                    <div class="class-item">Apple Black Rot</div>
+                    <div class="class-item">Apple Rust</div>
+                    <div class="class-item">Apple Healthy</div>
+                    <div class="class-item">Cherry Mildew</div>
+                    <div class="class-item">Corn Leaf Spot</div>
+                    <div class="class-item">Corn Rust</div>
+                    <div class="class-item">Grape Black Rot</div>
+                    <div class="class-item">Grape Esca</div>
+                    <div class="class-item">Pepper Spot</div>
+                    <div class="class-item">Potato Blight</div>
+                    <div class="class-item">Strawberry Scorch</div>
+                    <div class="class-item">Tomato Bacteria</div>
+                    <div class="class-item">Tomato Early Blight</div>
+                    <div class="class-item">Tomato Late Blight</div>
+                    <div class="class-item">Tomato Leaf Mold</div>
+                    <div class="class-item">Tomato YLCV</div>
+                    <div class="class-item">TomatoHealthy</div>
                 </div>
             </div>
         </div>
@@ -289,6 +312,161 @@
         const fileInput = document.getElementById('fileInput');
         const loading = document.getElementById('loading');
         const result = document.getElementById('result');
+
+        const diseaseInfo = {
+            "Apple___Apple_scab": {
+                "symptoms": ["Olive-green or brown spots on leaves", "Velvety texture on leaf spots", "Leaves may curl and drop early", "Dark scabby lesions on fruit"],
+                "prevention": ["Apply Mancozeb or Carbendazim during pre-monsoon season", "Remove fallen leaves after harvest", "Prune trees for better air circulation", "Plant resistant apple varieties suitable for Himachal and Kashmir"]
+            },
+            "Apple___Black_rot": {
+                "symptoms": ["Brown rotting spots on fruit", "Frogeye leaf spots with purple border", "Cankers on branches", "Mummified fruit remains on tree"],
+                "prevention": ["Remove infected fruit and branches", "Apply Carbendazim or Thiophanate-methyl during growing season", "Maintain good orchard hygiene", "Ensure proper pruning practices"]
+            },
+            "Apple___Cedar_apple_rust": {
+                "symptoms": ["Bright orange-yellow spots on leaves", "Raised spots with orange spores", "Small orange cups under leaves", "Premature leaf drop"],
+                "prevention": ["Manage local alternate weed hosts", "Apply Mancozeb or Dodine before monsoon rains", "Plant rust-resistant varieties", "Rake and destroy fallen leaves"]
+            },
+            "Apple___healthy": {
+                "symptoms": ["No disease symptoms present", "Leaves are green and healthy", "Normal growth pattern", "Fruit developing normally"],
+                "prevention": ["Continue regular maintenance", "Monitor for early signs of disease", "Maintain proper watering schedule", "Apply preventive fungicides during pre-monsoon"]
+            },
+            "Blueberry___healthy": {
+                "symptoms": ["No disease symptoms present", "Healthy green foliage", "Normal berry development", "Strong branch structure"],
+                "prevention": ["Maintain acidic soil pH using sulphur", "Provide adequate mulching with pine needles", "Ensure proper drainage", "Regular pruning for plant health"]
+            },
+            "Cherry_(including_sour)___Powdery_mildew": {
+                "symptoms": ["White powdery coating on leaves", "Curled or distorted leaves", "Stunted new growth", "Premature leaf drop"],
+                "prevention": ["Apply Wettable Sulphur or Carbendazim at first sign", "Improve air circulation", "Avoid overhead watering", "Remove infected plant parts"]
+            },
+            "Cherry_(including_sour)___healthy": {
+                "symptoms": ["No disease symptoms present", "Healthy dark green leaves", "Normal fruit development", "Strong branch growth"],
+                "prevention": ["Regular monitoring for pests", "Maintain proper watering", "Annual pruning recommended", "Apply Bordeaux mixture as dormant winter spray"]
+            },
+            "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot": {
+                "symptoms": ["Rectangular gray-tan lesions", "Lesions parallel to leaf veins", "Leaves may turn yellow and die", "Reduced yield potential"],
+                "prevention": ["Rotate Kharif crops yearly", "Plant resistant maize hybrids", "Apply Propiconazole or Mancozeb foliar sprays", "Remove crop residue after harvest"]
+            },
+            "Corn_(maize)___Common_rust_": {
+                "symptoms": ["Small reddish-brown pustules on leaves", "Pustules on both leaf surfaces", "Severe cases cause leaf death", "Reduced photosynthesis"],
+                "prevention": ["Plant rust-resistant maize hybrids", "Apply Mancozeb or Tricyclazole if severe", "Align sowing with monsoon onset", "Monitor Kharif fields regularly"]
+            },
+            "Corn_(maize)___Northern_Leaf_Blight": {
+                "symptoms": ["Long elliptical gray-green lesions", "Lesions 1-6 inches long", "Lesions may merge together", "Lower leaves affected first"],
+                "prevention": ["Use resistant Kharif hybrids", "Rotate with non-host Rabi crops", "Apply Mancozeb early", "Tillage to bury residue"]
+            },
+            "Corn_(maize)___healthy": {
+                "symptoms": ["No disease symptoms present", "Healthy green leaves", "Normal stalk development", "Good ear formation"],
+                "prevention": ["Maintain soil fertility with FYM", "Proper plant spacing", "Adequate irrigation during tasseling", "Regular scouting for pests"]
+            },
+            "Grape___Black_rot": {
+                "symptoms": ["Brown circular spots on leaves", "Black shriveled mummified fruit", "Tan spots with dark borders", "Fruit rot occurs rapidly"],
+                "prevention": ["Remove mummified fruit", "Apply Mancozeb pre-monsoon and post-monsoon", "Prune for air circulation", "Remove infected plant materials"]
+            },
+            "Grape___Esca_(Black_Measles)": {
+                "symptoms": ["Tiger-stripe pattern on leaves", "Interveinal discoloration", "Dark spots on berries", "Wood decay inside trunk"],
+                "prevention": ["Protect pruning wounds with Bordeaux paste", "Remove infected vines", "Avoid stress to plants", "Practice good vineyard sanitation"]
+            },
+            "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)": {
+                "symptoms": ["Angular reddish-brown spots", "Yellow halo around spots", "Spots may merge together", "Premature leaf drop"],
+                "prevention": ["Apply Copper Oxychloride or Mancozeb", "Improve air circulation", "Remove fallen leaves", "Avoid overhead irrigation"]
+            },
+            "Grape___healthy": {
+                "symptoms": ["No disease symptoms present", "Vibrant green foliage", "Normal grape cluster development", "Strong vine growth"],
+                "prevention": ["Regular pruning schedule", "Balanced NPK fertilization", "Monitor for mealybugs and thrips", "Maintain good drainage"]
+            },
+            "Orange___Haunglongbing_(Citrus_greening)": {
+                "symptoms": ["Yellowing of leaf veins", "Lopsided bitter fruit", "Small misshapen fruit", "Overall tree decline"],
+                "prevention": ["Control Asian citrus psyllid with Imidacloprid", "Remove infected trees immediately", "Plant certified disease-free buds from nurseries", "Regular neem oil or systemic insecticide applications"]
+            },
+            "Peach___Bacterial_spot": {
+                "symptoms": ["Small dark spots on leaves", "Spots may fall out creating holes", "Cracked and spotted fruit", "Twig cankers may form"],
+                "prevention": ["Plant resistant varieties", "Apply Copper Oxychloride or Streptomycin sprays", "Avoid overhead irrigation", "Remove infected branches"]
+            },
+            "Peach___healthy": {
+                "symptoms": ["No disease symptoms present", "Healthy green leaves", "Normal fruit development", "Strong branch structure"],
+                "prevention": ["Annual dormant Bordeaux spraying", "Proper pruning techniques", "Adequate fertilization", "Regular pest monitoring"]
+            },
+            "Pepper,_bell___Bacterial_spot": {
+                "symptoms": ["Small water-soaked spots on leaves", "Spots turn brown with yellow halo", "Raised scab-like spots on fruit", "Leaf drop in wet weather"],
+                "prevention": ["Use disease-free seeds", "Rotate crops for 2-3 years", "Apply Copper Oxychloride sprays", "Avoid working with wet plants"]
+            },
+            "Pepper,_bell___healthy": {
+                "symptoms": ["No disease symptoms present", "Dark green healthy leaves", "Normal fruit development", "Strong plant structure"],
+                "prevention": ["Maintain proper spacing", "Balanced watering schedule", "Regular DAP or NPK fertilization", "Monitor for aphids and thrips"]
+            },
+            "Potato___Early_blight": {
+                "symptoms": ["Brown spots with concentric rings", "Target-like appearance on leaves", "Lower leaves affected first", "Lesions may have yellow halo"],
+                "prevention": ["Rotate Rabi crops for 2-3 years", "Apply Mancozeb preventively", "Remove plant debris", "Plant certified disease-free seed tubers"]
+            },
+            "Potato___Late_blight": {
+                "symptoms": ["Water-soaked spots on leaves", "White fuzzy growth underneath", "Rapid plant collapse possible", "Brown firm rot on tubers"],
+                "prevention": ["Plant resistant varieties", "Apply Mancozeb or Metalaxyl during foggy weather", "Destroy infected plants immediately", "Ensure proper field drainage in Rabi season"]
+            },
+            "Potato___healthy": {
+                "symptoms": ["No disease symptoms present", "Healthy dark green foliage", "Normal tuber development", "Strong stem growth"],
+                "prevention": ["Use certified seed potatoes", "Proper hilling technique", "Adequate water management", "Regular field scouting"]
+            },
+            "Raspberry___healthy": {
+                "symptoms": ["No disease symptoms present", "Healthy green canes", "Normal fruit development", "Strong root system"],
+                "prevention": ["Annual cane pruning", "Good air circulation", "Proper watering practices", "Mulch with dry leaves"]
+            },
+            "Soybean___healthy": {
+                "symptoms": ["No disease symptoms present", "Green healthy trifoliate leaves", "Normal pod development", "Good plant vigor"],
+                "prevention": ["Kharif crop rotation practices", "Use Rhizobium treated seeds", "Scout fields regularly", "Manage soil fertility with phosphorus"]
+            },
+            "Squash___Powdery_mildew": {
+                "symptoms": ["White powdery spots on leaves", "Spots spread across leaf surface", "Leaves may yellow and die", "Reduced fruit production"],
+                "prevention": ["Plant resistant varieties", "Apply Wettable Sulphur or Neem oil early", "Improve air circulation", "Avoid overhead watering"]
+            },
+            "Strawberry___Leaf_scorch": {
+                "symptoms": ["Purple spots on leaves", "Spots develop tan centers", "Leaf edges appear burned", "Severe cases cause defoliation"],
+                "prevention": ["Remove infected leaves", "Apply Mancozeb preventively", "Avoid overhead irrigation", "Maintain proper plant spacing"]
+            },
+            "Strawberry___healthy": {
+                "symptoms": ["No disease symptoms present", "Healthy green trifoliate leaves", "Normal fruit production", "Vigorous runner growth"],
+                "prevention": ["Renew beds regularly", "Proper paddy straw mulching", "Balanced fertilization", "Monitor for mites"]
+            },
+            "Tomato___Bacterial_spot": {
+                "symptoms": ["Small dark greasy spots on leaves", "Spots may have yellow halo", "Raised scabby spots on fruit", "Leaf drop in wet weather"],
+                "prevention": ["Use disease-free transplants", "Apply Copper Oxychloride fungicides", "Rotate crops for 2-3 years", "Avoid working with wet plants"]
+            },
+            "Tomato___Early_blight": {
+                "symptoms": ["Brown spots with target rings", "Lower leaves affected first", "Stem lesions possible", "Fruit may develop dark spots"],
+                "prevention": ["Rotate crops yearly", "Mulch with dry grass", "Apply Mancozeb preventively", "Remove lower leaves"]
+            },
+            "Tomato___Late_blight": {
+                "symptoms": ["Water-soaked gray-green spots", "White mold on leaf undersides", "Rapid plant death possible", "Brown firm rot on fruit"],
+                "prevention": ["Plant resistant varieties", "Apply Mancozeb or Metalaxyl during Kharif humidity", "Remove infected plants immediately", "Ensure proper field drainage"]
+            },
+            "Tomato___Leaf_Mold": {
+                "symptoms": ["Yellow spots on upper leaf surface", "Olive-green mold underneath", "Leaves curl and die", "Usually in greenhouse conditions"],
+                "prevention": ["Improve polyhouse ventilation", "Reduce humidity levels", "Space plants properly", "Apply Mancozeb as needed"]
+            },
+            "Tomato___Septoria_leaf_spot": {
+                "symptoms": ["Small circular spots with dark borders", "Gray centers with tiny black dots", "Lower leaves affected first", "Severe defoliation possible"],
+                "prevention": ["Remove infected debris", "Apply Copper Oxychloride or Mancozeb early", "Rotate crops for 3 years", "Stake plants for airflow"]
+            },
+            "Tomato___Spider_mites Two-spotted_spider_mite": {
+                "symptoms": ["Tiny yellow speckling on leaves", "Fine webbing on undersides", "Leaves turn bronze and dry", "Severe infestations kill plants"],
+                "prevention": ["Spray with water to dislodge", "Apply Dicofol or Propargite if severe", "Encourage natural predators like ladybirds", "Avoid dusty conditions"]
+            },
+            "Tomato___Target_Spot": {
+                "symptoms": ["Brown spots with concentric rings", "Spots on leaves stems and fruit", "Lesions may crack open", "Defoliation in humid conditions"],
+                "prevention": ["Improve air circulation", "Apply Mancozeb preventively", "Remove plant debris", "Rotate crops regularly"]
+            },
+            "Tomato___Tomato_Yellow_Leaf_Curl_Virus": {
+                "symptoms": ["Leaves curl upward and yellow", "Plant growth is stunted", "Flower drop occurs", "Little to no fruit production"],
+                "prevention": ["Control whiteflies using yellow sticky traps", "Apply Neem oil or Imidacloprid", "Use resistant hybrids", "Remove infected plants to protect healthy ones"]
+            },
+            "Tomato___Tomato_mosaic_virus": {
+                "symptoms": ["Mottled light and dark green leaves", "Distorted leaf growth", "Stunted plant development", "Reduced fruit yield and quality"],
+                "prevention": ["Use virus-free seeds from certified sources", "Disinfect tools with bleach solution", "Control aphid vectors", "Remove infected plants promptly"]
+            },
+            "Tomato___healthy": {
+                "symptoms": ["No disease symptoms present", "Healthy dark green leaves", "Normal fruit development", "Strong plant structure"],
+                "prevention": ["Regular watering schedule", "Balanced NPK fertilization", "Proper staking and pruning", "Monitor for early disease signs"]
+            }
+        };
         
         // Handle click
         dropZone.addEventListener('click', () => fileInput.click());
@@ -371,6 +549,9 @@
             const statusEl = document.getElementById('healthStatus');
             const list = document.getElementById('predictionsList');
             const topPredictionsEl = document.getElementById('topPredictions');
+            const preventionSection = document.getElementById('preventionSection');
+            const symptomsList = document.getElementById('symptomsList');
+            const preventionList = document.getElementById('preventionList');
 
             const predictions = Array.isArray(data.predictions) ? data.predictions : [];
             const isNotLeaf = data.is_leaf === false || data.prediction === 'not_leaf';
@@ -390,6 +571,9 @@
 
                 list.innerHTML = '';
                 topPredictionsEl.style.display = 'none';
+                preventionSection.style.display = 'none';
+                symptomsList.innerHTML = '';
+                preventionList.innerHTML = '';
                 return;
             }
 
@@ -403,6 +587,9 @@
 
                 list.innerHTML = '';
                 topPredictionsEl.style.display = 'none';
+                preventionSection.style.display = 'none';
+                symptomsList.innerHTML = '';
+                preventionList.innerHTML = '';
                 return;
             }
 
@@ -426,17 +613,42 @@
                 statusEl.className = 'status disease';
             }
             
-            // Top predictions
+            // Top prediction only
             list.innerHTML = '';
-            predictions.forEach((pred, i) => {
-                list.innerHTML += `
-                    <div class="prediction-item">
-                        <span class="prediction-rank">${i + 1}.</span>
-                        <span class="prediction-class">${pred.class}</span>
-                        <span class="prediction-confidence">${(pred.confidence * 100).toFixed(1)}%</span>
-                    </div>
-                `;
-            });
+            list.innerHTML = `
+                <div class="prediction-item">
+                    <span class="prediction-rank">1.</span>
+                    <span class="prediction-class">${mainResult.class}</span>
+                    <span class="prediction-confidence">${(mainResult.confidence * 100).toFixed(1)}%</span>
+                </div>
+            `;
+
+            // Symptoms and prevention info (prefer server data, fallback to hard-coded)
+            const apiSymptoms = Array.isArray(data.symptoms) ? data.symptoms : [];
+            const apiPrevention = Array.isArray(data.prevention) ? data.prevention : [];
+            const fallbackData = diseaseInfo[mainResult.class];
+
+            const symptomsSource = apiSymptoms.length > 0
+                ? apiSymptoms
+                : (fallbackData && Array.isArray(fallbackData.symptoms) ? fallbackData.symptoms : []);
+
+            const preventionSource = apiPrevention.length > 0
+                ? apiPrevention
+                : (fallbackData && Array.isArray(fallbackData.prevention) ? fallbackData.prevention : []);
+
+            if (symptomsSource.length > 0) {
+                symptomsList.innerHTML = symptomsSource.map(item => `<li>${item}</li>`).join('');
+            } else {
+                symptomsList.innerHTML = '<li>No symptoms info available for this class.</li>';
+            }
+
+            if (preventionSource.length > 0) {
+                preventionList.innerHTML = preventionSource.map(item => `<li>${item}</li>`).join('');
+            } else {
+                preventionList.innerHTML = '<li>No prevention info available for this class.</li>';
+            }
+
+            preventionSection.style.display = 'block';
         }
     </script>
 </body>

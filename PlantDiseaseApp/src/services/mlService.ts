@@ -20,6 +20,7 @@ let SERVER_URL = "http://192.168.0.108:5000/predict";  // Current PC LAN IP
 // Fallback URLs to try in order
 const FALLBACK_URLS = [
     "http://192.168.0.108:5000/predict",
+    "https://192.168.116.200:5000/predict",
     "http://192.168.0.18:5000/predict",  // Android emulator
     "http://localhost:5000/predict",
     "http://127.0.0.1:5000/predict",
